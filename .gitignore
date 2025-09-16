@@ -1,0 +1,7 @@
+# Ignore org_code/code venv
+tetris/org_code/code/venv/
+# Ignore Python virtual environments
+tetris/windows_venv/
+tetris/linux_venv/
+# Ignore common Python cache and build files
+__pycache__/
