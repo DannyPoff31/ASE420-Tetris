@@ -41,11 +41,9 @@ Field = []
 # Tetris block Height and Width
 Height = 0
 Width = 0
-
 # StartX/Y position in the screen
 StartX = 100
 StartY= 60
-
 # Block size
 Tzoom = 20 # code smell - bad name, can you guess Tzoom from its name? 
 # Shift left/right or up/down
@@ -100,7 +98,6 @@ def break_lines():
                     
     Score += lines ** 2 # code smell - what if I want to use other stragies for score computation?    
 
-# this is what stops the piece in place
 def freeze(image):
     # code smell - can you guess what it does? why there is no comments on what it does, how, and why?
     global Field, State
@@ -191,10 +188,7 @@ def main():
     counter = 0
     pressing_down = False
 
-    height = 20
-    width = 10
-
-    initialize(height, width) # code smell - what is 20 and 10? Can we use keyword argument? 
+    initialize(20, 10) # code smell - what is 20 and 10? Can we use keyword argument? 
     make_figure(3,0)
     done = False
     while not done:
