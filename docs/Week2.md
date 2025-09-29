@@ -29,7 +29,8 @@ style: |
 ---
 
 - Features: 0 / 7
-- Requirements: 1 / 7
+- Requirements: 1 / 7 (14%)
+- LoC: 375
 
 Completed separation of concerns
 
