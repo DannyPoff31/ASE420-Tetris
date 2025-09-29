@@ -31,7 +31,7 @@ style: |
 - Features: 0 / 7
 - Requirements: 1 / 7
 
-Completed separation of responsibilities
+Completed separation of concerns
 
 ---
 
