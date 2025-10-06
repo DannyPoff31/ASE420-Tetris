@@ -1,10 +1,6 @@
 import pygame
-from piece import Piece
-
-# Board Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (128, 128, 128)
+from tetris.new_code.tetris_game.piece import Piece
+from constants import BLACK, WHITE, GRAY
 
 # This initalizes the board - will be called everytime the game starts
 class Board:

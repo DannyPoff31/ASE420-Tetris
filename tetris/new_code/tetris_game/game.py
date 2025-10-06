@@ -1,16 +1,20 @@
 import pygame
 
 from board import Board
-from renderer import Renderer
-from piece import Piece
-from input import Input
+from tetris.new_code.tetris_game.ui.renderer import Renderer
+from tetris.new_code.tetris_game.piece import Piece
+from tetris.new_code.tetris_game.input.input import Input
 
-# The size of the play screen
-size = (400, 500)
+from config import Config
 
 def run_game():
 
-    #Create input handler
+    # Begin the config process 
+    config = Config()
+
+    size = [config.get_graphics_setting('window_width'), Config.get_graphics_setting('window_height')]
+    fps = config.get_graphics_setting('fps')
+
     pygame.init()
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Code^3 Tetris")
@@ -24,33 +28,39 @@ def run_game():
 
     running = True  # Main run Bool
 
-    playing = False # When starting to play the actial game
+    # Create input
+    input_handler = Input(config)
 
-     # Create input
-    input = Input()
-
-    fps = 25
     counter = 0
     pressing_down = False
 
-    height = 20
-    width = 10
+    board_height = 20
+    board_width = 10
+
+    #Create new instance of board
+    board = Board(board_height, board_width)
 
     font = pygame.font.SysFont('Comic Sans', 25, True, False)
 
-    #Create new instance of board
-    board = Board(height, width)
-
     #Default starting position for pieces
-    pieceStartXPos = 3
-    pieceStartYPos = 0
-    piece = Piece(pieceStartXPos, pieceStartYPos)
+    piece_start_XPos = 3
+    piece_start_YPos = 0
+    piece = Piece(piece_start_XPos, piece_start_YPos)
 
     while running:
 
         counter += 1
         if counter > 100000:
             counter = 0
+
+        # This is what checks what keys are being pressed
+        # Returns True if key is pressed down, false otherwise
+        # TODO: Might be a better way to do this?
+        commands = input_handler.get_actions(piece, board)
+
+        for command in commands:
+            if command:
+                command.execute(piece, board)
 
         # Check if we need to automatically go down
         if counter % (fps // 2) == 0 or pressing_down:
@@ -61,7 +71,7 @@ def run_game():
                     # Freeze the piece
                     board.freezePiece(piece.getFigure(), piece.xShift, piece.yShift)
                     # Create a new piece
-                    piece = Piece(pieceStartXPos, pieceStartYPos)
+                    piece = Piece(piece_start_XPos, piece_start_YPos)
                     # Check for game over
                     if board.intersects(piece.getFigure(), piece.xShift, piece.yShift):
                         state = "gameover"
@@ -69,14 +79,9 @@ def run_game():
                 running = False
 
 
-        # This is what checks what keys are being pressed
-        # Returns True if key is pressed down, false otherwise
-        # TODO: Might be a better way to do this?
-        pressing_down = input.event_handler(piece, board)
-
         # piece = Piece(pieceStartXPos, pieceStartYPos)
         # Check intersection to see if the player has lost
-        if board.intersects(piece.getFigure(), pieceStartXPos, pieceStartYPos):
+        if board.intersects(piece.getFigure(), piece_start_XPos, piece_start_YPos):
             state = "" #TODO: Change game state
 
         renderer.renderBoard(board)
