@@ -23,14 +23,14 @@ class Config:
             self._create_default_config()
 
         if not os.path.exists(self.user_config_file):
-            shutil.copy2(self.default_config_file)
+            shutil.copy2(self.default_config_file, self.user_config_file)
         
 
     def _create_default_config(self):
         default_settings = {
             "graphics": {
                 "window_width" : 400,
-                "window_height": 500,
+                "window_height" : 500,
                 "fps": 25
             },
             "controls": {
@@ -39,7 +39,7 @@ class Config:
                 "soft_drop": pygame.K_DOWN,
                 "hard_drop": pygame.K_SPACE,
                 "rotate": pygame.K_UP,
-                "quit": pygame.q,
+                "quit": pygame.K_q,
                 "pause": pygame.K_ESCAPE
             }
         }
@@ -50,15 +50,16 @@ class Config:
 
     def _restore_from_default(self):
         self._create_default_config()
+        shutil.copy2(self.default_config_file, self.user_config_file)
     
     def _load_user_settings(self):
         try:
             with open(self.user_config_file, 'r') as file:
-                return json.load(file)
+                self.settings = json.load(file)
         except (json.JSONDecodeError, FileNotFoundError):
             self._restore_from_default()
             with open(self.user_config_file, 'r') as file:
-                return json.load(file)
+                self.settings = json.load(file)
             
     def get_control(self, action):
         return self.settings.get('controls', {}).get(action)

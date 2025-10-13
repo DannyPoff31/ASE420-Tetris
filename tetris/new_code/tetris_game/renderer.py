@@ -1,22 +1,6 @@
 import pygame
 
-from board import Board
-
-# Board Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (128, 128, 128)
-
-# Changed to immutable list
-Colors = (
-    (0, 0, 0),
-    (120, 37, 179),
-    (100, 179, 179),
-    (80, 34, 22),
-    (80, 134, 22),
-    (180, 34, 22),
-    (180, 34, 122),
-)
+from constants import COLORS, BLACK, WHITE, GRAY
 
 # StartX/Y position in the screen
 xStart = 100
@@ -27,7 +11,6 @@ blockPixelSize = 20
 
 class Renderer:
     def __init__(self, screen):
-        self = self
         self.screen = screen
         self.xStart = xStart
         self.yStart = yStart
@@ -53,7 +36,7 @@ class Renderer:
                 if board.field[i][j] > 0:
                     pygame.draw.rect(
                         self.screen, 
-                        Colors[board.field[i][j]],
+                        COLORS[board.field[i][j]],
                         [
                             self.xStart + self.blockPixelSize * j + 1, 
                             self.yStart + self.blockPixelSize * i + 1, 
@@ -70,7 +53,7 @@ class Renderer:
                 if p in figure:
                     pygame.draw.rect(
                         self.screen,
-                        Colors[piece.color],
+                        COLORS[piece.color],
                         [
                             self.xStart + self.blockPixelSize * (j + piece.xShift) + 1,
                             self.yStart + self.blockPixelSize * (i + piece.yShift) + 1,

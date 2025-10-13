@@ -1,11 +1,9 @@
 import pygame
-from tetris.new_code.tetris_game.piece import Piece
 from constants import BLACK, WHITE, GRAY
 
 # This initalizes the board - will be called everytime the game starts
 class Board:
     def __init__(self, height, width):
-        self = self
         self.height = height
         self.width = width
         self.field = []

@@ -56,11 +56,11 @@ class HardDropCommand(Command):
         piece.instant_drop(board)
         return True
     
-# Creates a command map based on the enum commands listed in enum.py
+# Creates a command map based on the enum commands listed in piece_action.py
 class CommandFacotry:
     def __init__(self):
         
-        from ..enum import PieceAction
+        from piece_action import PieceAction
 
         self._command_map = {
             PieceAction.MOVE_LEFT: lambda: MoveCommand(-1),
@@ -71,7 +71,7 @@ class CommandFacotry:
             PieceAction.HARD_DROP: lambda: HardDropCommand()
         }
 
-    # Gets a PieceAction enum passed by the input handler which then tells the piece what to d
+    # Gets a PieceAction enum passed by the input handler which then tells the piece what to do
     def create_command(self, action):
-        command_constructor = self._command_map(action)
+        command_constructor = self._command_map.get(action)
         return command_constructor() if command_constructor else None

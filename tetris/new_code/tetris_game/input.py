@@ -1,7 +1,6 @@
 import pygame
-fr
 
-from ..enum import PieceAction
+from piece_action import PieceAction
 
 class Input:
     def __init__(self, config):

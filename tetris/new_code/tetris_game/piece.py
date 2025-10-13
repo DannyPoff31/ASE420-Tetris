@@ -1,7 +1,7 @@
 import pygame
 import random
 from constants import COLORS, FIGURES
-from enum import PieceAction
+from piece_action import PieceAction
 
 class Piece:
     def __init__(self, x, y):

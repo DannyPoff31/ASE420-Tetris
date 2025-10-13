@@ -1,9 +1,10 @@
 import pygame
 
 from board import Board
-from tetris.new_code.tetris_game.ui.renderer import Renderer
-from tetris.new_code.tetris_game.piece import Piece
-from tetris.new_code.tetris_game.input.input import Input
+from renderer import Renderer
+from piece import Piece
+from input import Input
+from game_command import CommandFacotry
 
 from config import Config
 
@@ -12,7 +13,7 @@ def run_game():
     # Begin the config process 
     config = Config()
 
-    size = [config.get_graphics_setting('window_width'), Config.get_graphics_setting('window_height')]
+    size = [config.get_graphics_setting('window_width'), config.get_graphics_setting('window_height')]
     fps = config.get_graphics_setting('fps')
 
     pygame.init()
@@ -30,6 +31,9 @@ def run_game():
 
     # Create input
     input_handler = Input(config)
+    
+    # Create command factory
+    command_factory = CommandFacotry()
 
     counter = 0
     pressing_down = False
@@ -56,11 +60,13 @@ def run_game():
         # This is what checks what keys are being pressed
         # Returns True if key is pressed down, false otherwise
         # TODO: Might be a better way to do this?
-        commands = input_handler.get_actions(piece, board)
+        actions = input_handler.get_actions()
 
-        for command in commands:
-            if command:
-                command.execute(piece, board)
+        for action in actions:
+            if action:
+                command = command_factory.create_command(action)
+                if command:
+                    command.execute(piece, board)
 
         # Check if we need to automatically go down
         if counter % (fps // 2) == 0 or pressing_down:
