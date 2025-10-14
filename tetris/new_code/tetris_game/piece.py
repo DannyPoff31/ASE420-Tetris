@@ -22,29 +22,21 @@ class Piece:
         ):
             self.yShift += 1
         self.yShift -= 1
-        board.freezePiece(self.figures[self.type][self.rotation], self.xShift, self.yShift)
+        board.freeze_piece(self)
 
     # When pressing left or right, move x amount
     def go_side(self, newXShift, board):
         old_x = self.xShift
         self.xShift += newXShift
-        if board.intersects(
-            self.figures[self.type][self.rotation],
-            self.xShift,
-            self.yShift
-        ):
+        if board.intersects(self):
             self.xShift = old_x
 
     # When pressing instant drop key
     def instant_drop(self, board):
-        while not board.intersects(
-            self.figures[self.type][self.rotation], 
-            self.xShift, 
-            self.yShift
-        ):
+        while not board.intersects(self):
             self.yShift += 1 
         self.yShift -= 1
-        board.freezePiece(self.figures[self.type][self.rotation], self.xShift, self.yShift)
+        board.freeze_piece(self)
 
     def rotate(self, board):
         def rotate_figure():
@@ -52,12 +44,8 @@ class Piece:
 
         oldRotation = self.rotation
         rotate_figure()
-        if board.intersects(
-            self.figures[self.type][self.rotation],
-            self.xShift,
-            self.yShift
-        ):
+        if board.intersects(self):
             self.rotation = oldRotation
 
-    def getFigure(self):
+    def get_figure(self):
         return self.figures[self.type][self.rotation]

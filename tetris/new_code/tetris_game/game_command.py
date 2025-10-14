@@ -18,6 +18,7 @@ class MoveCommand(Command):
         self.board = board
 
         piece.go_side(self.direction * self.distance, self.board)
+        return False
 
 class RotateCommand(Command):
     def __init__(self, clockwise=True):
@@ -35,7 +36,7 @@ class RotateCommand(Command):
         else:
             piece.rotation = (piece.rotation - 1) % len(piece.figures[piece.type])
 
-        can_rotate = not board.intersects(piece.getFigure(), piece.xShift, piece.yShift)
+        can_rotate = not board.intersects(piece)
         piece.rotation = old_rotation
         
         #Success
@@ -43,12 +44,14 @@ class RotateCommand(Command):
             piece.rotate(board)
 
         #Todo: something when failed
+        return False
     
 class SoftDropCommand(Command):
     def execute(self, piece, board):
-        if not board.intersects(piece.getFigure(), piece.xShift, piece.yShift + 1):
-            piece.yShift += 1
-            return True
+        old_y = piece.yShift
+        piece.yShift += 1
+        if board.intersects(piece):
+            piece.yShift = old_y
         return False
     
 class HardDropCommand(Command):

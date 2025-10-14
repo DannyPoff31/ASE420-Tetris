@@ -12,6 +12,7 @@ class Input:
             config.get_control('hard_drop'): PieceAction.HARD_DROP,
             config.get_control('rotate'): PieceAction.ROTATE_CLOCKWISE,
             config.get_control('pause'): PieceAction.PAUSE,
+            config.get_control('quit'): PieceAction.QUIT
         }
 
     def get_actions(self):
@@ -26,3 +27,9 @@ class Input:
                     actions.append(action)
         
         return actions
+    
+    # Check if the down key is currently being held
+    def is_down_pressed(self):
+        keys = pygame.key.get_pressed()
+        down_key = self.config.get_control('soft_drop')
+        return keys[down_key]
