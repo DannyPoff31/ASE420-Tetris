@@ -1,6 +1,6 @@
 import pygame
 
-from piece_action import PieceAction
+from game.piece_action import PieceAction
 
 class Input:
     def __init__(self, config):

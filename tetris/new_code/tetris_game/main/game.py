@@ -1,14 +1,17 @@
 import pygame
 
-from board import Board
-from renderer import Renderer
-from piece import Piece
-from input import Input
-from game_command import CommandFacotry
+from game.board import Board
+from game.piece import Piece
+from game.piece_action import PieceAction
 
-from piece_action import PieceAction
+from ui.renderer import Renderer
 
-from config import Config
+from input.input import Input
+from tetris.new_code.tetris_game.game.game_command import CommandFacotry
+
+from state.state import States
+
+from config.config import Config
 
 def run_game():
 
@@ -25,48 +28,46 @@ def run_game():
         PieceAction.PAUSE: toggle_pause
     }
 
-        
     # Begin the config process 
     config = Config()
 
-    size = [config.get_graphics_setting('window_width'), config.get_graphics_setting('window_height')]
-    fps = config.get_graphics_setting('fps')
+    # Create the abstract state class to be handled throughout the loop
+    state = States()
 
+    # Start the pygame client
     pygame.init()
-    screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode(config)
     pygame.display.set_caption("Code^3 Tetris")
     clock = pygame.time.Clock()
+    font = pygame.font.SysFont('Comic Sans', 25, True, False)
 
     # What creates the screen
     renderer = Renderer(screen = screen)
 
-    #change to menu/settings/etc
-    state = "start"
-
-    running = True  # Main run Bool
-
     # Create input
     input_handler = Input(config)
-    
+
     # Create command factory
     command_factory = CommandFacotry()
 
-    counter = 0
     pressing_down = False
 
     board_height = 20
     board_width = 10
-
     #Create new instance of board
     board = Board(board_height, board_width)
-
-    font = pygame.font.SysFont('Comic Sans', 25, True, False)
 
     #Default starting position for pieces
     piece_start_XPos = 3
     piece_start_YPos = 0
     piece = Piece(piece_start_XPos, piece_start_YPos)
 
+    # Main run Bool
+    running = True
+
+    counter = 0
+
+    # Main Run loop
     while running:
 
         counter += 1
