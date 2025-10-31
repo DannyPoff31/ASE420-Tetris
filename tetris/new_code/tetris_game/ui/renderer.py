@@ -15,6 +15,7 @@ class Renderer:
         self.xStart = xStart
         self.yStart = yStart
         self.block_pixel_size = block_pixel_size
+        self.font = pygame.font.SysFont('Comic Sans', 25, True, False)
 
     def render_board(self, board):
         self.screen.fill(WHITE)
