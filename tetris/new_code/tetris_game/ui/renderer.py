@@ -15,7 +15,6 @@ class Renderer:
         self.xStart = xStart
         self.yStart = yStart
         self.block_pixel_size = block_pixel_size
-        self.font = font = pygame.font.SysFont('Comic Sans', 25, True, False)
 
     def render_board(self, board):
         self.screen.fill(WHITE)
@@ -62,7 +61,15 @@ class Renderer:
                         ]
                     )
     
+    def render_menu(self, buttons):
+        self.screen.fill(WHITE)
+        for button in buttons:
+            pygame.draw.rect(self.screen, (0, 128, 255), button["rect"])
+            text = self.font.render(button["label"], True, (255, 255, 255))
+            text_rect = text.get_rect(center=button["rect"].center)
+            self.screen.blit(text, text_rect)
+            pygame.display.flip()
 
-    def clear():
-        #TODO: clean unused attributes (states)
-        return False
+    def clear(self):
+        self.screen.fill(WHITE)
+        return

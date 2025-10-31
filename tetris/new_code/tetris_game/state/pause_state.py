@@ -10,7 +10,7 @@ from ..game.game_command import CommandFacotry
 
 
 class Pause(States):
-    def __init(self, config, input, renderer):
+    def __init__(self, config, input, renderer):
         States.__init__(self, config, input, renderer)
         self.next = 'pause'
 
@@ -24,8 +24,7 @@ class Pause(States):
 
 
         self.game_actions = {
-            PieceAction.QUIT: quit_game,
-            PieceAction.PUASE: toggle_pause
+            PieceAction.QUIT: '',
         }
 
     def cleanup(self):

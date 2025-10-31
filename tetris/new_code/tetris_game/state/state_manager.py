@@ -15,7 +15,7 @@ class StateManager():
     def __init__(self, config, input, renderer):
 
 
-        self.current_state_string = 'game' # Start at the menu state
+        self.current_state_string = 'menu' # Start at the menu state
 
         self.config = config
         self.input = input
@@ -30,7 +30,7 @@ class StateManager():
             'setting': Setting(config=self.config, input=self.input, renderer=self.renderer),
         }
 
-        self._change_state(self.current_state_string)
+        self.current_state = self.states[self.current_state_string]
 
 
     def update(self):
@@ -39,12 +39,14 @@ class StateManager():
         # Update state 
         result = self.current_state.update()
 
+        print("current state string ", self.current_state_string)
+        print("result ", result)
+
         if result == self.current_state_string:
             # Same state
             return True
         elif result is False or result == 'quit':
             # Game should end!
-            print("Game Should end!")
             return False
         
         # Change state
@@ -54,4 +56,12 @@ class StateManager():
         return True
 
     def _change_state(self, new_state_string):
+        # Change string
+        self.current_state_string = new_state_string
+
+        # Reset to pre-init state
+        self.current_state.cleanup()
+
+        # Change state
         self.current_state = self.states[new_state_string]
+

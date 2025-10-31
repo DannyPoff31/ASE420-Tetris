@@ -1,9 +1,9 @@
-import pygame as pg
+import pygame # type: ignore
 import sys
 from .state import States
 
 class Menu(States):
-    def __init(self, config, input, renderer):
+    def __init__(self, config, input, renderer):
         States.__init__(self, config, input, renderer)
         self.next = 'game'
 
@@ -12,18 +12,45 @@ class Menu(States):
         self.input = input
         self.renderer = renderer
         
-        # State specific objects
+        # Menu buttons
+        self.buttons = [
+            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
+            {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
+            {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
+        ]
 
     def cleanup(self):
-        print("Cleaning up menu")
+        self.renderer.clear()
+        
+        self.startup()
+
+        return
+
     def startup(self):
         print("starting menu")
+
     def get_event(self, event):
-        if event.type == pg.KEYDOWN:
+        if event.type == pygame.KEYDOWN:
             print('Game state keydown')
-        elif event.type == pg.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             self.done = True
-    def update(self, screen, dt):
-        self.draw(screen)
-    def draw(self, screen):
-        screen.fill((0,0,255))
+
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = event.pos
+                for button in self.buttons:
+                    if button["rect"].collidepoint(mouse_pos):
+                        return button["action"]
+
+        self.draw()
+        return 'menu'
+
+    def draw(self):
+        # Clear screen
+        self.renderer.clear()
+
+        # Render the main menu
+        self.renderer.render_menu(self.buttons)

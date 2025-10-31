@@ -10,7 +10,7 @@ from ..game.game_command import CommandFacotry
 
 
 class GameOver(States):
-    def __init(self, config, input, renderer):
+    def __init__(self, config, input, renderer):
         States.__init__(self, config, input, renderer)
         self.next = 'menu'
 
@@ -26,8 +26,8 @@ class GameOver(States):
 
 
         self.game_actions = {
-            PieceAction.QUIT: quit_game,
-            PieceAction.MENU: toggle_pause
+            PieceAction.QUIT: 'quit_game',
+            PieceAction.PAUSE: 'toggle_pause'
         }
 
     def cleanup(self):
@@ -39,11 +39,11 @@ class GameOver(States):
             print('Game state keydown')
         elif event.type == pg.MOUSEBUTTONDOWN:
             self.done = True
-            
+
     def update(self):
         
         # Gameover state   
-        return False
+        return 'menu'
 
         self.draw()
     def draw(self):

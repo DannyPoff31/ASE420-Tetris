@@ -47,7 +47,13 @@ class Game(States):
         self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
 
     def cleanup(self):
-        print("Cleaning up menu")
+        # clear the screen
+        self.renderer.clear()
+
+        # Reset to pre-init valyes
+        self.startup()
+
+        return
 
     # Used to restart the game by reseting vars (e.g. if the player wants to replay after losing)
     def startup(self):
@@ -76,7 +82,10 @@ class Game(States):
 
         # Determines which actions are happening 
         for action in actions:
-            if action in self.game_actions:
+            if action == PieceAction.QUIT:
+                return 'quit'
+            elif action in self.game_actions:
+                # Activates the actions that are stored inside the 'game_actions' map
                 self.game_actions[action]()  
             else:
                 command = self.command_factory.create_command(action)
