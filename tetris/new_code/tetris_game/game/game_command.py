@@ -68,7 +68,7 @@ class HardDropCommand(Command):
 class CommandFacotry:
     def __init__(self):
         
-        from piece_action import PieceAction
+        from .piece_action import PieceAction
 
         self._command_map = {
             PieceAction.MOVE_LEFT: lambda: MoveCommand(-1),

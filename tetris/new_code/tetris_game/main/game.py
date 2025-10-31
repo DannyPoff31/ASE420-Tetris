@@ -1,36 +1,25 @@
 import pygame # type: ignore (ignores the "could not resolve" error)
 
-from game.board import Board
-from game.piece import Piece
-from game.piece_action import PieceAction
+from ..ui.renderer import Renderer
 
-from ui.renderer import Renderer
+from ..input.input import Input
 
-from input.input import Input
-from game.game_command import CommandFacotry
+from ..config.config import Config
 
-from config.config import Config
-
-from state import StateManager
+from ..state.state_manager import StateManager
 
 def run_game():
 
     def quit_game():
         nonlocal running
         running = False
-
-    game_actions = {
-        PieceAction.QUIT: quit_game,
-    }
-
-
     
     # Begin the config process 
     config = Config()
 
     # Start the pygame client
     pygame.init()
-    screen = pygame.display.set_mode(config)
+    screen = pygame.display.set_mode((config.window_width, config.window_height))
     pygame.display.set_caption("Code^3 Tetris")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont('Comic Sans', 25, True, False)
@@ -54,7 +43,7 @@ def run_game():
             config.counter = 0
 
         # Update the current state to update the screen
-        state_manager.update(screen)
+        state_manager.update()
 
         # refresh the screen
         pygame.display.flip()

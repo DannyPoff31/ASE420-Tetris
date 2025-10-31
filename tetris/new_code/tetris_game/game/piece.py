@@ -1,7 +1,7 @@
-import pygame
+import pygame # type: ignore
 import random
-from constants import COLORS, FIGURES
-from piece_action import PieceAction
+from ..main.constants import COLORS, FIGURES
+from .piece_action import PieceAction
 
 class Piece:
     def __init__(self, x, y):

@@ -6,17 +6,17 @@ of tetris will occur.
 
 import pygame as pg # type: ignore (ignores the "could not resolve" error)
 import sys
-from state import States
+from .state import States
 
-from game.piece import Piece
-from game.board import Board
-from game.piece_action import PieceAction
+from ..game.piece import Piece
+from ..game.board import Board
+from ..game.piece_action import PieceAction
 
-from tetris.new_code.tetris_game.game.game_command import CommandFacotry
+from ..game.game_command import CommandFacotry
 
 
 class Game(States):
-    def __init(self, config, input, renderer):
+    def __init__(self, config, input, renderer):
         States.__init__(self, config, input, renderer)
         self.next = 'gameover'
 
@@ -37,13 +37,13 @@ class Game(States):
         self.pressing_down = False
 
         self.game_actions = {
-            PieceAction.PUASE: 'pause'
+            PieceAction.PAUSE: 'pause'
         }
-
 
         # Default Starting position for pieces
         self.piece_start_xPos = 3
         self.piece_start_yPos = 0
+
         self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
 
     def cleanup(self):
@@ -88,8 +88,8 @@ class Game(States):
 
         if need_new_piece:
         # Create new piece (after hard drop)
-            piece = Piece(self.piece_start_XPos, self.piece_start_YPos)
-            if self.board.intersects(piece):
+            self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+            if self.board.intersects(self.piece):
                 return "gameover"
             
         # Check if down key is being held
@@ -105,18 +105,18 @@ class Game(States):
             
         if should_move_down and not need_new_piece:
 
-            old_y = piece.yShift
+            old_y = self.piece.yShift
 
-            piece.yShift += 1
+            self.piece.yShift += 1
 
-            if self.board.intersects(piece):
-                piece.yShift = old_y
+            if self.board.intersects(self.piece):
+                self.piece.yShift = old_y
                 # Freeze the piece
-                self.board.freeze_piece(piece)
+                self.board.freeze_piece(self.piece)
                 # Create a new piece
-                piece = Piece(self.piece_start_XPos, self.piece_start_YPos)
+                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
                 # Check for game over
-                if self.board.intersects(piece):
+                if self.board.intersects(self.piece):
                     return "gameover"
         
         self.draw()
@@ -124,7 +124,7 @@ class Game(States):
     def draw(self):
         # Redraw the board and the piece
         self.renderer.render_board(self.board)
-        self.draw_piece(self.piece)
+        self.renderer.draw_piece(self.piece)
 
     def toggle_pause():
         return 'pause'

@@ -3,7 +3,13 @@ Author: Nate Brewer
 Class to manage the states, their transitions, delegating updates etc.
 """
 
-from state import States, Game, Pause, GameOver, Menu, Setting
+from .state import States
+from .game_state import Game
+from .gameover_state import GameOver
+from .menu_state import Menu
+from .setting_state import Setting
+from .pause_state import Pause
+
 
 class StateManager():
     def __init__(self, config, input, renderer):
@@ -26,11 +32,11 @@ class StateManager():
         self._change_state(self.current_state_string)
 
 
-    def update(self, screen):
+    def update(self):
         # Todo: grab state and get an update 
 
         # Update state 
-        self.current_state.update(screen)
+        self.current_state.update()
 
     def _change_state(self, new_state_string):
         self.current_state = self.states[new_state_string]

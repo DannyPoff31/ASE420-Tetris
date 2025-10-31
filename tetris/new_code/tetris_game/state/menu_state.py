@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from state import States
+from .state import States
 
 class Menu(States):
     def __init(self, config, input, renderer):

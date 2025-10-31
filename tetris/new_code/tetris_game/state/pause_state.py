@@ -1,12 +1,12 @@
 import pygame as pg # type: ignore (ignores the "could not resolve" error)
 import sys
-from state import States
+from .state import States
 
-from game.piece import Piece
-from game.board import Board
-from game.piece_action import PieceAction
+from ..game.piece import Piece
+from ..game.board import Board
+from ..game.piece_action import PieceAction
 
-from tetris.new_code.tetris_game.game.game_command import CommandFacotry
+from ..game.game_command import CommandFacotry
 
 
 class Pause(States):

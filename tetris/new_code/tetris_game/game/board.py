@@ -1,5 +1,5 @@
-import pygame
-from constants import BLACK, WHITE, GRAY
+import pygame # type: ignore
+from ..main.constants import BLACK, WHITE, GRAY
 
 # This initalizes the board - will be called everytime the game starts
 class Board:

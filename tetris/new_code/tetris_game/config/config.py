@@ -14,8 +14,10 @@ class Config:
         self._check_for_config()
         self._load_user_settings()
 
-        self.fps = [self.get_graphics_setting('window_width'), self.get_graphics_setting('window_height')] 
-        self.size = self.get_graphics_setting('fps')
+        self.window_width = self.get_graphics_setting('window_width')
+        self.window_height = self.get_graphics_setting('window_height')
+        
+        self.fps = self.get_graphics_setting('fps')
 
         self.counter = 0
 
