@@ -99,7 +99,7 @@ class Game(States):
         # When holding down, move faster (every 5 frames instead of fps//2)
         should_move_down = False
         if pressing_down:
-            should_move_down = self.config.counter % 5 == 0  # Move every 5 frames when holding down
+            should_move_down = self.config.counter % 5  # Move every 5 frames when holding down
         else:
             should_move_down = self.config.counter % (self.config.fps // 2) == 0  # Normal speed
             
@@ -120,6 +120,7 @@ class Game(States):
                     return "gameover"
         
         self.draw()
+        return 'game'
 
     def draw(self):
         # Redraw the board and the piece

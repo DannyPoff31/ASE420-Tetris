@@ -1,5 +1,5 @@
-import pygame
-
+import pygame # type: ignore (ignores the "could not resolve" error)
+ 
 from ..game.piece_action import PieceAction
 
 class Input:

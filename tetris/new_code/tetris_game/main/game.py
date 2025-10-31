@@ -39,11 +39,12 @@ def run_game():
     # Main Run loop
     while running:
 
+        config.counter += 1
         if config.counter > 100000:
             config.counter = 0
 
-        # Update the current state to update the screen
-        state_manager.update()
+        # Update the current state to update the screen. IF returns false then the game will quit
+        running = state_manager.update()
 
         # refresh the screen
         pygame.display.flip()

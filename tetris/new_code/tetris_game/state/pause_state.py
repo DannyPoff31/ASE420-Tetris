@@ -37,13 +37,13 @@ class Pause(States):
             print('Game state keydown')
         elif event.type == pg.MOUSEBUTTONDOWN:
             self.done = True
-    def update(self, screen, dt):
+    def update(self):
 
         # Add menu to Resume/quit/settings 
 
-        self.draw(screen)
-    def draw(self, screen):
-        screen.fill((0,0,255))
+        self.draw()
+    def draw(self):
+        print("draw")
 
     def toggle_pause():
         next = 'pause'

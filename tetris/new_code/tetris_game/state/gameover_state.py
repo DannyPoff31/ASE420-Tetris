@@ -39,13 +39,15 @@ class GameOver(States):
             print('Game state keydown')
         elif event.type == pg.MOUSEBUTTONDOWN:
             self.done = True
-    def update(self, screen, dt):
+            
+    def update(self):
         
-        # Gameover state
+        # Gameover state   
+        return False
 
-        self.draw(screen)
-    def draw(self, screen):
-        screen.fill((0,0,255))
+        self.draw()
+    def draw(self):
+        print('Draw!')
 
     def toggle_pause():
         next = 'pause'

@@ -14,6 +14,7 @@ from .pause_state import Pause
 class StateManager():
     def __init__(self, config, input, renderer):
 
+
         self.current_state_string = 'game' # Start at the menu state
 
         self.config = config
@@ -26,7 +27,7 @@ class StateManager():
             'game': Game(config=self.config, input=self.input, renderer=self.renderer),
             'gameover': GameOver(config=self.config, input=self.input, renderer=self.renderer),
             'menu': Menu(config=self.config, input=self.input, renderer=self.renderer),
-            'setting': Setting(config=self.config, input=self.input, renderer=self.renderer)
+            'setting': Setting(config=self.config, input=self.input, renderer=self.renderer),
         }
 
         self._change_state(self.current_state_string)
@@ -36,7 +37,21 @@ class StateManager():
         # Todo: grab state and get an update 
 
         # Update state 
-        self.current_state.update()
+        result = self.current_state.update()
+
+        if result == self.current_state_string:
+            # Same state
+            return True
+        elif result is False or result == 'quit':
+            # Game should end!
+            print("Game Should end!")
+            return False
+        
+        # Change state
+        self._change_state(result)
+        
+        # Always return true
+        return True
 
     def _change_state(self, new_state_string):
         self.current_state = self.states[new_state_string]
