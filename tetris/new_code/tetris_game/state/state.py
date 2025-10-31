@@ -2,7 +2,7 @@
 This is the abstract class that all states are children too
 """
 
-import pygame as pg
+import pygame as pg # type: ignore (ignores the "could not resolve" error)
 import sys
 from abc import ABC, abstractmethod
 
@@ -23,7 +23,7 @@ class States(ABC):
         pass
     def get_event(self, event):
         pass
-    def update(self, screen, dt):
+    def update(self):
         pass
-    def draw(self, screen):
+    def draw(self):
         pass

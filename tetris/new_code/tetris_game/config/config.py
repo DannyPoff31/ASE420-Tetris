@@ -2,7 +2,7 @@
 # can be edited by the user to change settings and saved
 
 import json
-import pygame
+import pygame # type: ignore (ignores the "could not resolve" error)
 import shutil
 import os
 
@@ -16,6 +16,8 @@ class Config:
 
         self.fps = [self.get_graphics_setting('window_width'), self.get_graphics_setting('window_height')] 
         self.size = self.get_graphics_setting('fps')
+
+        self.counter = 0
 
 
     # On creation of the config object it wi

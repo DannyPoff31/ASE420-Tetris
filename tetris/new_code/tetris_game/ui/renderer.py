@@ -1,6 +1,6 @@
-import pygame
+import pygame # type: ignore (ignores the "could not resolve" error)
 
-from constants import COLORS, BLACK, WHITE, GRAY
+from main.constants import COLORS, BLACK, WHITE, GRAY
 
 # StartX/Y position in the screen
 xStart = 100
