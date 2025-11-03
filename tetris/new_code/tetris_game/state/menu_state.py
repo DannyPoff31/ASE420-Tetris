@@ -11,6 +11,8 @@ class Menu(States):
         self.config = config
         self.input = input
         self.renderer = renderer
+
+        self.drawn = False
         
         # Menu buttons
         self.buttons = [
@@ -27,13 +29,7 @@ class Menu(States):
         return
 
     def startup(self):
-        print("starting menu")
-
-    def get_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            print('Game state keydown')
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            self.done = True
+        self.drawn = False
 
     def update(self):
         for event in pygame.event.get():
@@ -44,8 +40,10 @@ class Menu(States):
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
                         return button["action"]
-
-        self.draw()
+        if(not self.drawn):
+            # Only need to draw button states once
+            self.draw()
+            self.drawn = True
         return 'menu'
 
     def draw(self):

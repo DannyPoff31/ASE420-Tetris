@@ -1,12 +1,6 @@
-import pygame as pg # type: ignore (ignores the "could not resolve" error)
+import pygame # type: ignore (ignores the "could not resolve" error)
 import sys
 from .state import States
-
-from ..game.piece import Piece
-from ..game.board import Board
-from ..game.piece_action import PieceAction
-
-from ..game.game_command import CommandFacotry
 
 
 class GameOver(States):
@@ -19,35 +13,51 @@ class GameOver(States):
         self.input = input
         self.renderer = renderer
 
-        # Board instantiation
-        self.board_height = 20
-        self.board_width = 10
-        self.board = Board(self.board_height, self.board_width)
+        self.drawn = False
 
+        # Game over buttons
+        self.buttons = [
+            {"label": "Try Again", "rect": pygame.Rect(100, 170, 200, 50), "action": "restart"},
+            {"label": "Return to Menu", "rect": pygame.Rect(100, 240, 200, 50), "action": "menu"}
+        ]
 
-        self.game_actions = {
-            PieceAction.QUIT: 'quit_game',
-            PieceAction.PAUSE: 'toggle_pause'
-        }
 
     def cleanup(self):
-        print("Cleaning up menu")
-    def startup(self):
-        print("starting menu")
-    def get_event(self, event):
-        if event.type == pg.KEYDOWN:
-            print('Game state keydown')
-        elif event.type == pg.MOUSEBUTTONDOWN:
-            self.done = True
+        self.renderer.clear();
+        self.drawn = False
 
     def update(self):
-        
-        # Gameover state   
-        return 'menu'
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = event.pos
+                for button in self.buttons:
+                    if button["rect"].collidepoint(mouse_pos):
+                        return button["action"]
+        if(not self.drawn):
+            # Only need to draw button states once
+            self.draw()
+            self.drawn = True
+        return 'gameover'
 
         self.draw()
     def draw(self):
-        print('Draw!')
+        self.renderer.clear()
+
+        # Create a simple "GAME OVER" text overlay
+        font = pygame.font.SysFont('Arial', 72, True)  # Large, bold font
+        text_surface = font.render('GAME OVER', True, (255, 0, 0))  # Red text
+        
+        # Center the text on the screen
+        screen_rect = self.renderer.screen.get_rect()
+        text_rect = text_surface.get_rect(center=(screen_rect.centerx, screen_rect.centery))
+        
+        # Draw the text
+        self.renderer.screen.blit(text_surface, text_rect)
+
+        self.renderer.render_gameover(self.buttons)
+
 
     def toggle_pause():
         next = 'pause'

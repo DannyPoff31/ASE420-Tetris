@@ -22,7 +22,7 @@ class Piece:
         ):
             self.yShift += 1
         self.yShift -= 1
-        board.freeze_piece(self)
+        return board.freeze_piece(self)
 
     # When pressing left or right, move x amount
     def go_side(self, newXShift, board):
@@ -36,7 +36,7 @@ class Piece:
         while not board.intersects(self):
             self.yShift += 1 
         self.yShift -= 1
-        board.freeze_piece(self)
+        return board.freeze_piece(self)
 
     def rotate(self, board):
         def rotate_figure():

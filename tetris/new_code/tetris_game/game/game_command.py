@@ -61,8 +61,8 @@ class SoftDropCommand(Command):
     
 class HardDropCommand(Command):
     def execute(self, piece, board):
-        piece.instant_drop(board)
-        return True
+        lines_broken = piece.instant_drop(board)
+        return lines_broken  # Return the actual lines cleared, not just True
     
 # Creates a command map based on the enum commands listed in piece_action.py
 class CommandFacotry:

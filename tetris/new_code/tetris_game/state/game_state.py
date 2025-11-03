@@ -14,7 +14,6 @@ from ..game.piece_action import PieceAction
 
 from ..game.game_command import CommandFacotry
 
-
 class Game(States):
     def __init__(self, config, input, renderer):
         States.__init__(self, config, input, renderer)
@@ -43,14 +42,22 @@ class Game(States):
         # Default Starting position for pieces
         self.piece_start_xPos = 3
         self.piece_start_yPos = 0
-
         self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+
+        self.points_per_line = [
+            40,     # Single Line 
+            100,    # Double
+            300,    # Triple
+            1200    # Tetris (4-lines)
+        ]
+
+        self.points = 0
 
     def cleanup(self):
         # clear the screen
         self.renderer.clear()
 
-        # Reset to pre-init valyes
+        # Reset to pre-init values
         self.startup()
 
         return
@@ -74,7 +81,16 @@ class Game(States):
         self.piece_start_yPos = 0
         self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
 
+        self.points = 0
+
+    def calculate_points(self, lines_broken):
+        self.points += self.points_per_line[lines_broken - 1]
+    
+
     def update(self):
+        # Reset lines broken
+        lines_broken = 0
+
         # Key Checker 
         actions = self.input.get_actions()
 
@@ -91,8 +107,11 @@ class Game(States):
                 command = self.command_factory.create_command(action)
                 if command:
                     result = command.execute(self.piece, self.board)
-                    if result is True:
-                    # Hard drop was executed and we need a new piece
+                    if result is not None and result is not False:
+                        # Hard drop was executed - result is lines_broken
+                        lines_broken = result
+                        if lines_broken > 0:
+                            self.calculate_points(lines_broken)
                         need_new_piece = True
 
         if need_new_piece:
@@ -121,7 +140,9 @@ class Game(States):
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
-                self.board.freeze_piece(self.piece)
+                lines_broken = self.board.freeze_piece(self.piece)
+                if lines_broken > 0:
+                    self.calculate_points(lines_broken)
                 # Create a new piece
                 self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
                 # Check for game over
@@ -135,6 +156,7 @@ class Game(States):
         # Redraw the board and the piece
         self.renderer.render_board(self.board)
         self.renderer.draw_piece(self.piece)
+        self.renderer.draw_score(self.points)
 
     def toggle_pause():
         return 'pause'
