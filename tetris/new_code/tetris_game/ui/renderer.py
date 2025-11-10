@@ -90,6 +90,9 @@ class Renderer:
     def render_gameover(self, buttons):
         self._render_buttons(buttons)
 
+    def render_pause(self, buttons):
+        self._render_buttons(buttons)
+
     def clear(self):
         self.screen.fill(WHITE)
         return

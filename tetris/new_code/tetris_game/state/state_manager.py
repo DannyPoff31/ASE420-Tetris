@@ -48,6 +48,8 @@ class StateManager():
         
         # Change state
         self._change_state(result)
+
+        print(self.current_state_string)
         
         # Always return true
         return True

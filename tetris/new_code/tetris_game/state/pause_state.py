@@ -1,13 +1,6 @@
-import pygame as pg # type: ignore (ignores the "could not resolve" error)
-import sys
+import pygame# type: ignore (ignores the "could not resolve" error)
+
 from .state import States
-
-from ..game.piece import Piece
-from ..game.board import Board
-from ..game.piece_action import PieceAction
-
-from ..game.game_command import CommandFacotry
-
 
 class Pause(States):
     def __init__(self, config, input, renderer):
@@ -19,30 +12,38 @@ class Pause(States):
         self.input = input
         self.renderer = renderer
 
-        # Fast down
-        self.pressing_down = False
+        self.drawn = False
 
-
-        self.game_actions = {
-            PieceAction.QUIT: '',
-        }
+        # Game over buttons
+        self.buttons = [
+            {"label": "Resume", "rect": pygame.Rect(100, 80, 200, 50), "action": "game"},
+            {"label": "Restart", "rect": pygame.Rect(100, 150, 200, 50), "action": "restart"},
+            {"label": "Settings", "rect": pygame.Rect(100, 220, 200, 50), "action": "settings"},
+            {"label": "Return to Menu", "rect": pygame.Rect(100, 290, 200, 50), "action": "menu"},
+        ]
 
     def cleanup(self):
-        print("Cleaning up menu")
+        self.renderer.clear();
+        self.drawn = False
+
     def startup(self):
-        print("starting menu")
-    def get_event(self, event):
-        if event.type == pg.KEYDOWN:
-            print('Game state keydown')
-        elif event.type == pg.MOUSEBUTTONDOWN:
-            self.done = True
+        self.drawn = False
+
     def update(self):
-
-        # Add menu to Resume/quit/settings 
-
-        self.draw()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = event.pos
+                for button in self.buttons:
+                    if button["rect"].collidepoint(mouse_pos):
+                        return button["action"]
+        if(not self.drawn):
+            # Only need to draw button states once
+            self.draw()
+            self.drawn = True
+        return 'pause'
     def draw(self):
-        print("draw")
+        self.renderer.clear()
 
-    def toggle_pause():
-        next = 'pause'
+        self.renderer.render_pause(self.buttons)
