@@ -4,14 +4,21 @@ from ..main.constants import COLORS, FIGURES
 from .piece_action import PieceAction
 
 class Piece:
-    def __init__(self, x, y):
+    def __init__(self, x, y, piece_type=None, piece_color=None):
         self = self
         self.xShift = x
         self.yShift = y
         self.rotation = 0   
         self.figures = FIGURES
-        self.type = random.randint(0, len(self.figures) - 1)
-        self.color = random.randint(1, len(COLORS) - 1)
+
+        if piece_type is None:
+            self.type = random.randint(0, len(self.figures) - 1)
+        else:
+            self.type = piece_type
+        if piece_color is None:
+            self.color = random.randint(1, len(COLORS) - 1)
+        else:
+            self.color = piece_color
 
     # this gets called automatically - will get called faster when the down button is pressed
     def go_down(self, board):
