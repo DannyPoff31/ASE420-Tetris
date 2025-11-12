@@ -29,6 +29,12 @@ class Game(States):
             PieceAction.PAUSE: 'pause'
         }
 
+        # Default Starting position for pieces
+        self.piece_start_xPos = 3
+        self.piece_start_yPos = 0
+        self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+        self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+
         self.points_per_line = [
             40,     # Single Line 
             100,    # Double
@@ -63,6 +69,8 @@ class Game(States):
         self.piece_start_xPos = 3
         self.piece_start_yPos = 0
         self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+
+        self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
 
         self.points = 0
 
@@ -99,7 +107,10 @@ class Game(States):
 
         if need_new_piece:
         # Create new piece (after hard drop)
-            self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+
+            self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
+                              self.next_piece.type, self.next_piece.color)
+            self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
             if self.board.intersects(self.piece):
                 return "gameover"
             
@@ -126,8 +137,9 @@ class Game(States):
                 lines_broken = self.board.freeze_piece(self.piece)
                 if lines_broken > 0:
                     self.calculate_points(lines_broken)
-                # Create a new piece
-                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
+                                  self.next_piece.type, self.next_piece.color)
+                self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
                 # Check for game over
                 if self.board.intersects(self.piece):
                     return "gameover"
@@ -140,6 +152,7 @@ class Game(States):
         self.renderer.render_board(self.board)
         self.renderer.draw_piece(self.piece)
         self.renderer.draw_score(self.points)
+        self.renderer.draw_next_piece(self.next_piece)
 
     def toggle_pause():
         return 'pause'
