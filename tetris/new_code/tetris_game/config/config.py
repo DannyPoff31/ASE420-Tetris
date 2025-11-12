@@ -37,7 +37,7 @@ class Config:
             "graphics": {
                 "window_width" : 400,
                 "window_height" : 500,
-                "fps": 25
+                "fps": 100000
             },
             "controls": {
                 "move_left": pygame.K_LEFT,
@@ -65,7 +65,10 @@ class Config:
             self._restore_from_default()
             with open(self.user_config_file, 'r') as file:
                 self.settings = json.load(file)
-            
+    
+    def get_all_controls(self):
+        return self.settings.get('controls', {})
+
     def get_control(self, action):
         return self.settings.get('controls', {}).get(action)
     

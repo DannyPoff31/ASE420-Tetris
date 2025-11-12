@@ -1,3 +1,8 @@
+"""
+Author: Nathaniel Brewer
+
+
+"""
 import pygame# type: ignore (ignores the "could not resolve" error)
 
 from .state import States

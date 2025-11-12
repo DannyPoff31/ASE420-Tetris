@@ -1,7 +1,7 @@
 """
 Author: Nathaniel Brewer
 
-Extension of State manager. This will help with the pause state 
+Extension of State manager. This will help with the pause state and the settings state
 """
 from .state_manager import StateManager
 
@@ -19,7 +19,8 @@ class EnhancedStateManager(StateManager):
 
         # Pausing the game
         pause_resume = (self.current_state_string == 'game' and new_state_string == 'pause') or \
-            (self.current_state_string =='pause' and new_state_string == 'game')
+            (self.current_state_string =='pause' and new_state_string == 'game') or \
+            (self.current_state_string =='settings')
 
         if pause_resume:
             should_cleanup = False

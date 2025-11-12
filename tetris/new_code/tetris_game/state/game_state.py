@@ -1,5 +1,6 @@
 """
-Author: Nate Brewer
+Author: Nathaniel Brewer
+
 This is the game state, this is where all the game logic will occur and any variables pertaining to the actual playing
 of tetris will occur.
 """

@@ -1,3 +1,6 @@
+"""
+Author: Nathaniel Brewer
+"""
 import pygame # type: ignore (ignores the "could not resolve" error)
 
 from ..ui.renderer import Renderer
