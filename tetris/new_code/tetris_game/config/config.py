@@ -37,7 +37,7 @@ class Config:
             "graphics": {
                 "window_width" : 400,
                 "window_height" : 500,
-                "fps": 100000
+                "fps": 25
             },
             "controls": {
                 "move_left": pygame.K_LEFT,
