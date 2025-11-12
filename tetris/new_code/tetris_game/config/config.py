@@ -2,7 +2,7 @@
 # can be edited by the user to change settings and saved
 
 import json
-import pygame
+import pygame # type: ignore (ignores the "could not resolve" error)
 import shutil
 import os
 
@@ -13,6 +13,13 @@ class Config:
 
         self._check_for_config()
         self._load_user_settings()
+
+        self.window_width = self.get_graphics_setting('window_width')
+        self.window_height = self.get_graphics_setting('window_height')
+        
+        self.fps = self.get_graphics_setting('fps')
+
+        self.counter = 0
 
 
     # On creation of the config object it wi
@@ -25,7 +32,6 @@ class Config:
         if not os.path.exists(self.user_config_file):
             shutil.copy2(self.default_config_file, self.user_config_file)
         
-
     def _create_default_config(self):
         default_settings = {
             "graphics": {
@@ -47,7 +53,6 @@ class Config:
         with open(self.default_config_file, 'w') as file:
             json.dump(default_settings, file, indent=2)
 
-
     def _restore_from_default(self):
         self._create_default_config()
         shutil.copy2(self.default_config_file, self.user_config_file)
@@ -60,7 +65,10 @@ class Config:
             self._restore_from_default()
             with open(self.user_config_file, 'r') as file:
                 self.settings = json.load(file)
-            
+    
+    def get_all_controls(self):
+        return self.settings.get('controls', {})
+
     def get_control(self, action):
         return self.settings.get('controls', {}).get(action)
     

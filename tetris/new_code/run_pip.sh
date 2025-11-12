@@ -3,4 +3,4 @@
 # . ~/venv/p311/bin/activate # Example
 
 pip install pygame
-python3 game.py
+python3 ./tetris_game/main/game.py

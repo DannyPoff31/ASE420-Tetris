@@ -1,0 +1,57 @@
+"""
+Author: Nathaniel Brewer
+"""
+import pygame
+import sys
+from .state import States
+
+class Setting(States):
+    def __init__(self, config, input, renderer):
+        States.__init__(self, config, input, renderer)
+        self.config = config
+        self.input = input
+        self.renderer = renderer
+        
+        self.drawn = False
+
+        self.controls = self.config.get_all_controls()
+
+        print(self.controls)
+
+        # Buttons to change controls
+        self.button = [
+            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
+            {"label": "This is the settings page", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
+            {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
+            {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
+        ]
+
+    def cleanup(self):
+        self.renderer.clear()
+        self.startup()
+
+    def startup(self):
+        self.drawn = False
+
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = event.pos
+                for button in self.buttons:
+                    if button["rect"].collidepoint(mouse_pos):
+                        return button["action"]
+        if(not self.drawn):
+            # Only need to draw button states once
+            self.draw()
+            self.drawn = True
+        return 'settings'
+
+    def draw(self):
+        # Clear screen
+        self.renderer.clear()
+
+        # Render the main menu
+        self.renderer.render_menu(self.button)
+

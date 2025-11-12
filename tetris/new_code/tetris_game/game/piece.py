@@ -1,7 +1,7 @@
-import pygame
+import pygame # type: ignore
 import random
-from constants import COLORS, FIGURES
-from piece_action import PieceAction
+from ..main.constants import COLORS, FIGURES
+from .piece_action import PieceAction
 
 class Piece:
     def __init__(self, x, y):
@@ -22,7 +22,7 @@ class Piece:
         ):
             self.yShift += 1
         self.yShift -= 1
-        board.freeze_piece(self)
+        return board.freeze_piece(self)
 
     # When pressing left or right, move x amount
     def go_side(self, newXShift, board):
@@ -36,7 +36,7 @@ class Piece:
         while not board.intersects(self):
             self.yShift += 1 
         self.yShift -= 1
-        board.freeze_piece(self)
+        return board.freeze_piece(self)
 
     def rotate(self, board):
         def rotate_figure():

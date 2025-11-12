@@ -1,5 +1,8 @@
-import pygame
-from constants import BLACK, WHITE, GRAY
+"""
+Author: Nathaniel Brewer
+"""
+import pygame # type: ignore
+from ..main.constants import BLACK, WHITE, GRAY
 
 # This initalizes the board - will be called everytime the game starts
 class Board:
@@ -45,7 +48,6 @@ class Board:
     
     # This will stop the piece from moving (called after it intersects with another piece)
     def freeze_piece(self, piece):
-        createNewPiece = False # Bool to tell game.py to create a new figure
 
         for i in range(4):
             for j in range(4):
@@ -56,18 +58,19 @@ class Board:
                     if (0 <= board_y < self.height and 0 <= board_x < self.width):
                         self.field[board_y][board_x] = piece.color
 
-        self.break_lines()
-        createNewPiece = True
-        return createNewPiece
+        broken_lines = self.break_lines()
+        
+        return broken_lines
     
     def break_lines(self):
         lines = 0
         i = self.height - 1  # Start from bottom
-        while i >= 1:
+        while i >= 0:
             zeros = 0
             for j in range(self.width):
                 if self.field[i][j] == 0:
                     zeros += 1
+            
             # this row is full
             if zeros == 0:
                 lines += 1
@@ -77,11 +80,13 @@ class Board:
                         self.field[k][j] = self.field[k - 1][j]
                 # Clear the top row
                 for j in range(self.width):
-                    self.field[1][j] = 0
+                    self.field[0][j] = 0
                 # Don't increment i since we need to check this row again
                 # (a new row has moved down to this position)
             else:
                 i -= 1  # Only move up if no line was cleared
+
+        return lines
 
     def clear_board(self):
         #TODO: Clear the board and it's un-needed attributes (states)

@@ -1,3 +1,8 @@
+"""
+This is the place when commands (such as rotate) are handled and executed. 
+This is only for game commands that affect the pieces themselves
+"""
+
 from abc import ABC, abstractmethod
 
 class Command:
@@ -56,14 +61,14 @@ class SoftDropCommand(Command):
     
 class HardDropCommand(Command):
     def execute(self, piece, board):
-        piece.instant_drop(board)
-        return True
+        lines_broken = piece.instant_drop(board)
+        return lines_broken  # Return the actual lines cleared, not just True
     
 # Creates a command map based on the enum commands listed in piece_action.py
 class CommandFacotry:
     def __init__(self):
         
-        from piece_action import PieceAction
+        from .piece_action import PieceAction
 
         self._command_map = {
             PieceAction.MOVE_LEFT: lambda: MoveCommand(-1),

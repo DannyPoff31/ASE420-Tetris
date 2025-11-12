@@ -1,6 +1,6 @@
-import pygame
+import pygame # type: ignore (ignores the "could not resolve" error)
 
-from constants import COLORS, BLACK, WHITE, GRAY
+from ..main.constants import COLORS, BLACK, WHITE, GRAY
 
 # StartX/Y position in the screen
 xStart = 100
@@ -15,7 +15,7 @@ class Renderer:
         self.xStart = xStart
         self.yStart = yStart
         self.block_pixel_size = block_pixel_size
-        self.font = font = pygame.font.SysFont('Comic Sans', 25, True, False)
+        self.font = pygame.font.SysFont('Comic Sans', 25, True, False)
 
     def render_board(self, board):
         self.screen.fill(WHITE)
@@ -62,7 +62,37 @@ class Renderer:
                         ]
                     )
     
+    def draw_score(self, score):
+        # Calculate position to the right of the board
+        score_x = self.xStart + (self.block_pixel_size * 9) + 30  # 10 = board width, 30 = padding
+        score_y = self.yStart + 20
+        
+        # Render "SCORE" label
+        label_text = self.font.render('SCORE', True, BLACK)
+        self.screen.blit(label_text, (score_x, score_y))
+        
+        # Render the actual score value below the label
+        score_text = self.font.render(str(score), True, BLACK)
+        self.screen.blit(score_text, (score_x, score_y + 35))
 
-    def clear():
-        #TODO: clean unused attributes (states)
-        return False
+    def _render_buttons(self, buttons):
+        self.screen.fill(WHITE)
+        for button in buttons:
+            pygame.draw.rect(self.screen, (0, 128, 255), button["rect"])
+            text = self.font.render(button["label"], True, (255, 255, 255))
+            text_rect = text.get_rect(center=button["rect"].center)
+            self.screen.blit(text, text_rect)
+            pygame.display.flip()
+
+    def render_menu(self, buttons):
+        self._render_buttons(buttons)
+
+    def render_gameover(self, buttons):
+        self._render_buttons(buttons)
+
+    def render_pause(self, buttons):
+        self._render_buttons(buttons)
+
+    def clear(self):
+        self.screen.fill(WHITE)
+        return
