@@ -1,5 +1,6 @@
 """
-Author: Nate Brewer
+Author: Nathaniel Brewer
+
 This is the game state, this is where all the game logic will occur and any variables pertaining to the actual playing
 of tetris will occur.
 """
@@ -24,17 +25,6 @@ class Game(States):
         self.renderer = renderer
         self.input = input
 
-        # State specific objects
-        self.command_factory = CommandFacotry()
-
-        # Board instantiation
-        self.board_height = 20
-        self.board_width = 10
-        self.board = Board(self.board_height, self.board_width)
-
-        # Fast down
-        self.pressing_down = False
-
         self.game_actions = {
             PieceAction.PAUSE: 'pause'
         }
@@ -52,7 +42,7 @@ class Game(States):
             1200    # Tetris (4-lines)
         ]
 
-        self.points = 0
+        self.startup()
 
     def cleanup(self):
         # clear the screen
@@ -60,8 +50,6 @@ class Game(States):
 
         # Reset to pre-init values
         self.startup()
-
-        return
 
     # Used to restart the game by reseting vars (e.g. if the player wants to replay after losing)
     def startup(self):
@@ -105,7 +93,7 @@ class Game(States):
                 return 'quit'
             elif action in self.game_actions:
                 # Activates the actions that are stored inside the 'game_actions' map
-                self.game_actions[action]()  
+                return self.game_actions[action]  
             else:
                 command = self.command_factory.create_command(action)
                 if command:

@@ -1,3 +1,6 @@
+"""
+Author: Nathaniel Brewer
+"""
 import pygame # type: ignore
 from ..main.constants import BLACK, WHITE, GRAY
 

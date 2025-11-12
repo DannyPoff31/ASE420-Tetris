@@ -23,10 +23,7 @@ class Menu(States):
 
     def cleanup(self):
         self.renderer.clear()
-        
         self.startup()
-
-        return
 
     def startup(self):
         self.drawn = False
