@@ -65,7 +65,10 @@ class Config:
             self._restore_from_default()
             with open(self.user_config_file, 'r') as file:
                 self.settings = json.load(file)
-            
+    
+    def get_all_controls(self):
+        return self.settings.get('controls', {})
+
     def get_control(self, action):
         return self.settings.get('controls', {}).get(action)
     

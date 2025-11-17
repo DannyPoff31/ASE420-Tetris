@@ -21,7 +21,6 @@ class GameOver(States):
             {"label": "Return to Menu", "rect": pygame.Rect(100, 240, 200, 50), "action": "menu"}
         ]
 
-
     def cleanup(self):
         self.renderer.clear();
         self.drawn = False
@@ -42,8 +41,6 @@ class GameOver(States):
             self.draw()
             self.drawn = True
         return 'gameover'
-
-        self.draw()
     def draw(self):
         self.renderer.clear()
 
@@ -59,7 +56,3 @@ class GameOver(States):
         self.renderer.screen.blit(text_surface, text_rect)
 
         self.renderer.render_gameover(self.buttons)
-
-
-    def toggle_pause():
-        next = 'pause'

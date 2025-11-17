@@ -1,3 +1,6 @@
+"""
+Author: Nathaniel Brewer
+"""
 import pygame # type: ignore (ignores the "could not resolve" error)
 
 from ..ui.renderer import Renderer
@@ -6,7 +9,7 @@ from ..input.input import Input
 
 from ..config.config import Config
 
-from ..state.state_manager import StateManager
+from ..state.enhanced_state_manager import EnhancedStateManager
 
 def run_game():
 
@@ -31,7 +34,7 @@ def run_game():
     input = Input(config)
 
     # Create the abstract state class to be handled throughout the loop
-    state_manager = StateManager(config, input, renderer)
+    state_manager = EnhancedStateManager(config, input, renderer)
 
     # Main run Bool
     running = True

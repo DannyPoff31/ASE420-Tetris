@@ -1,5 +1,5 @@
 """
-Author: Nate Brewer
+Author: Nathaniel Brewer
 Class to manage the states, their transitions, delegating updates etc.
 """
 
@@ -9,7 +9,6 @@ from .gameover_state import GameOver
 from .menu_state import Menu
 from .setting_state import Setting
 from .pause_state import Pause
-
 
 class StateManager():
     def __init__(self, config, input, renderer):
@@ -26,7 +25,7 @@ class StateManager():
             'game': Game(config=self.config, input=self.input, renderer=self.renderer),
             'gameover': GameOver(config=self.config, input=self.input, renderer=self.renderer),
             'menu': Menu(config=self.config, input=self.input, renderer=self.renderer),
-            'setting': Setting(config=self.config, input=self.input, renderer=self.renderer),
+            'settings': Setting(config=self.config, input=self.input, renderer=self.renderer),
             'restart': Game(config=self.config, input=self.input, renderer=self.renderer)
         }
 
@@ -48,6 +47,8 @@ class StateManager():
         
         # Change state
         self._change_state(result)
+
+        print(self.current_state_string)
         
         # Always return true
         return True
