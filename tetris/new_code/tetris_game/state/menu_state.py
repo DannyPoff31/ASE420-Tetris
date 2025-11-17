@@ -39,6 +39,8 @@ class Menu(States):
                 mouse_pos = event.pos
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
+                        # Play click sound when button is clicked
+                        self.renderer.play_click_sound()
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once
