@@ -5,7 +5,7 @@ Author: Nathaniel Brewer
 """
 import pygame# type: ignore (ignores the "could not resolve" error)
 
-from .state import States
+from .abstract_state import States
 
 class Pause(States):
     def __init__(self, config, input, renderer):

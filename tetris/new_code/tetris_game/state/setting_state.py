@@ -3,7 +3,7 @@ Author: Nathaniel Brewer
 """
 import pygame
 import sys
-from .state import States
+from .abstract_state import States
 
 class Setting(States):
     def __init__(self, config, input, renderer):

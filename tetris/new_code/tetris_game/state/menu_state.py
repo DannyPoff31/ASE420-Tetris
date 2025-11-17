@@ -1,6 +1,6 @@
 import pygame # type: ignore
 import sys
-from .state import States
+from .abstract_state import States
 
 class Menu(States):
     def __init__(self, config, input, renderer):

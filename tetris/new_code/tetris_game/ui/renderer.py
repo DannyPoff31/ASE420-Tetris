@@ -110,7 +110,6 @@ class Renderer:
         figure = next_piece.get_figure()
         if not figure:
             return
-        
 
         min_j = 4
         max_j = -1
@@ -167,6 +166,18 @@ class Renderer:
 
     def render_pause(self, buttons):
         self._render_buttons(buttons)
+
+    def draw_level(self, level):
+        left_margin = 10
+        level_y = 10  # Top margin
+        
+        # Render "LEVEL" label
+        label_text = self.font.render('LEVEL', True, BLACK)
+        self.screen.blit(label_text, (left_margin, level_y))
+        
+        # Render the actual level value below the label
+        level_text = self.font.render(str(level), True, BLACK)
+        self.screen.blit(level_text, (left_margin, level_y + 35))
 
     def clear(self):
         self.screen.fill(WHITE)

@@ -7,7 +7,7 @@ of tetris will occur.
 
 import pygame as pg # type: ignore (ignores the "could not resolve" error)
 import sys
-from .state import States
+from .abstract_state import States
 
 from ..game.piece import Piece
 from ..game.board import Board
@@ -74,13 +74,23 @@ class Game(States):
 
         self.points = 0
 
-    def calculate_points(self, lines_broken):
+        # Set the level to 1
+        self.config.level = 1
+        self.total_lines_broken = 0
+        
+        # Track when piece last moved down
+        self.last_move_counter = 0
+
+    def _calculate_points(self, lines_broken):
         self.points += self.points_per_line[lines_broken - 1]
-    
 
     def update(self):
         # Reset lines broken
         lines_broken = 0
+
+        # Check level requirements (every 10 blocks broken level += 1)
+        if((self.total_lines_broken / self.config.level) // 10):
+            self.config.level += 1
 
         # Key Checker 
         actions = self.input.get_actions()
@@ -101,13 +111,13 @@ class Game(States):
                     if result is not None and result is not False:
                         # Hard drop was executed - result is lines_broken
                         lines_broken = result
+                        self.total_lines_broken += lines_broken
                         if lines_broken > 0:
-                            self.calculate_points(lines_broken)
+                            self._calculate_points(lines_broken)
                         need_new_piece = True
 
         if need_new_piece:
         # Create new piece (after hard drop)
-
             self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
                               self.next_piece.type, self.next_piece.color)
             self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
@@ -121,22 +131,23 @@ class Game(States):
         # When holding down, move faster (every 5 frames instead of fps//2)
         should_move_down = False
         if pressing_down:
-            should_move_down = self.config.counter % 5  # Move every 5 frames when holding down
+            should_move_down = (self.config.counter - self.last_move_counter) >= 5  # Move every 5 frames when holding down
         else:
-            should_move_down = self.config.counter % (self.config.fps // 2) == 0  # Normal speed
+            should_move_down = (self.config.counter - self.last_move_counter) >= (self.config.fps // 2)  # Normal speed
             
         if should_move_down and not need_new_piece:
 
             old_y = self.piece.yShift
 
             self.piece.yShift += 1
+            self.last_move_counter = self.config.counter
 
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
                 lines_broken = self.board.freeze_piece(self.piece)
                 if lines_broken > 0:
-                    self.calculate_points(lines_broken)
+                    self._calculate_points(lines_broken)
                 self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
                                   self.next_piece.type, self.next_piece.color)
                 self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
@@ -153,6 +164,7 @@ class Game(States):
         self.renderer.draw_piece(self.piece)
         self.renderer.draw_score(self.points)
         self.renderer.draw_next_piece(self.next_piece)
+        self.renderer.draw_level(self.config.level)
 
     def toggle_pause():
         return 'pause'

@@ -42,7 +42,9 @@ def run_game():
     # Main Run loop
     while running:
 
-        config.counter += 1
+
+        config.counter += config.level
+        print(config.counter)
         if config.counter > 100000:
             config.counter = 0
 
