@@ -2,6 +2,8 @@
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
+LIGHT_BROWN = (222, 184, 135)
+DARK_BROWN = (101, 67, 33)
 
 # Piece Colors
 COLORS = (

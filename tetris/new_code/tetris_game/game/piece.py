@@ -43,7 +43,9 @@ class Piece:
         while not board.intersects(self):
             self.yShift += 1 
         self.yShift -= 1
-        return board.freeze_piece(self)
+        result = board.freeze_piece(self)
+        # Return tuple (lines_broken, cleared_indices)
+        return result
 
     def rotate(self, board):
         def rotate_figure():

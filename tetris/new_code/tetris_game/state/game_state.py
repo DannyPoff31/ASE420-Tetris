@@ -99,10 +99,17 @@ class Game(States):
                 if command:
                     result = command.execute(self.piece, self.board)
                     if result is not None and result is not False:
-                        # Hard drop was executed - result is lines_broken
-                        lines_broken = result
+                        # Hard drop was executed - result is (lines_broken, cleared_indices)
+                        if isinstance(result, tuple):
+                            lines_broken, cleared_indices = result
+                        else:
+                            lines_broken = result
+                            cleared_indices = []
                         # Play click sound when block is placed (hard drop)
                         self.renderer.play_click_sound()
+                        # Create particles for each cleared line
+                        for line_y in cleared_indices:
+                            self.renderer.create_line_clear_particles(line_y, self.board_width)
                         if lines_broken > 0:
                             self.calculate_points(lines_broken)
                         need_new_piece = True
@@ -136,9 +143,12 @@ class Game(States):
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
-                lines_broken = self.board.freeze_piece(self.piece)
+                lines_broken, cleared_indices = self.board.freeze_piece(self.piece)
                 # Play click sound when block is placed
                 self.renderer.play_click_sound()
+                # Create particles for each cleared line
+                for line_y in cleared_indices:
+                    self.renderer.create_line_clear_particles(line_y, self.board_width)
                 if lines_broken > 0:
                     self.calculate_points(lines_broken)
                 self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
@@ -157,6 +167,9 @@ class Game(States):
         self.renderer.draw_piece(self.piece)
         self.renderer.draw_score(self.points)
         self.renderer.draw_next_piece(self.next_piece)
+        # Update and draw particles
+        self.renderer.update_particles()
+        self.renderer.draw_particles()
 
     def toggle_pause():
         return 'pause'

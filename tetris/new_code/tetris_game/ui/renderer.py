@@ -1,7 +1,9 @@
 import pygame # type: ignore (ignores the "could not resolve" error)
 import os
 
-from ..main.constants import COLORS, BLACK, WHITE, GRAY
+from ..main.constants import COLORS, BLACK, WHITE, GRAY, LIGHT_BROWN, DARK_BROWN
+import random
+import math
 
 # StartX/Y position in the screen
 xStart = 100
@@ -37,14 +39,87 @@ class Renderer:
             self.click_sound = pygame.mixer.Sound(click_sound_path)
         else:
             self.click_sound = None
+        
+        # Particle system for line clearing effects
+        self.particles = []
     
     def play_click_sound(self):
         """Play the click sound effect"""
         if self.click_sound is not None:
             self.click_sound.play()
+    
+    def create_line_clear_particles(self, line_y, board_width):
+        """Create particles when a line is cleared"""
+        # Calculate screen position of the cleared line
+        screen_y = self.yStart + self.block_pixel_size * line_y + self.block_pixel_size // 2
+        
+        # Create particles for each block in the line
+        for j in range(board_width):
+            screen_x = self.xStart + self.block_pixel_size * j + self.block_pixel_size // 2
+            
+            # Create multiple particles per block
+            for _ in range(5):
+                angle = random.uniform(0, 2 * math.pi)
+                speed = random.uniform(2, 5)
+                vx = math.cos(angle) * speed
+                vy = math.sin(angle) * speed
+                
+                # Random bright and colorful colors
+                color = random.choice([
+                    (255, 50, 50),    # Bright Red
+                    (50, 255, 50),    # Bright Green
+                    (50, 50, 255),    # Bright Blue
+                    (255, 255, 50),   # Bright Yellow
+                    (255, 50, 255),   # Bright Magenta
+                    (50, 255, 255),   # Bright Cyan
+                    (255, 150, 50),   # Bright Orange
+                    (150, 50, 255),   # Bright Purple
+                    (50, 255, 150),   # Bright Mint
+                    (255, 200, 50),   # Bright Gold
+                    (200, 50, 255),   # Bright Pink
+                    (50, 200, 255),   # Bright Sky Blue
+                ])
+                
+                lifetime = random.randint(25, 45)
+                
+                self.particles.append({
+                    'x': screen_x,
+                    'y': screen_y,
+                    'vx': vx,
+                    'vy': vy,
+                    'color': color,
+                    'lifetime': lifetime,
+                    'age': 0,
+                    'size': random.randint(3, 5)  # Slightly larger particles
+                })
+    
+    def update_particles(self):
+        """Update all particles"""
+        for particle in self.particles[:]:
+            particle['x'] += particle['vx']
+            particle['y'] += particle['vy']
+            particle['vy'] += 0.2  # Gravity
+            particle['age'] += 1
+            
+            if particle['age'] >= particle['lifetime']:
+                self.particles.remove(particle)
+    
+    def draw_particles(self):
+        """Draw all particles"""
+        for particle in self.particles:
+            # Fade out as particle ages
+            alpha = 255 * (1 - particle['age'] / particle['lifetime'])
+            color = tuple(min(255, max(0, int(c * (1 - particle['age'] / particle['lifetime'])))) for c in particle['color'])
+            
+            pygame.draw.circle(
+                self.screen,
+                color,
+                (int(particle['x']), int(particle['y'])),
+                particle['size']
+            )
 
     def render_board(self, board):
-        self.screen.fill(WHITE)
+        self.screen.fill(LIGHT_BROWN)
 
         for i in range(board.height):
             for j in range(board.width):
@@ -211,9 +286,9 @@ class Renderer:
                         )
 
     def _render_buttons(self, buttons):
-        self.screen.fill(WHITE)
+        self.screen.fill(LIGHT_BROWN)
         for button in buttons:
-            pygame.draw.rect(self.screen, (0, 128, 255), button["rect"])
+            pygame.draw.rect(self.screen, DARK_BROWN, button["rect"])
             text = self.font.render(button["label"], True, (255, 255, 255))
             text_rect = text.get_rect(center=button["rect"].center)
             self.screen.blit(text, text_rect)
@@ -229,5 +304,6 @@ class Renderer:
         self._render_buttons(buttons)
 
     def clear(self):
-        self.screen.fill(WHITE)
+        self.screen.fill(LIGHT_BROWN)
+        self.particles = []  # Clear particles when clearing screen
         return
