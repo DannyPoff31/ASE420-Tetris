@@ -1,7 +1,7 @@
 import pygame # type: ignore (ignores the "could not resolve" error)
 import os
 
-from ..main.constants import COLORS, BLACK, WHITE, GRAY, LIGHT_BROWN, DARK_BROWN
+from ..main.constants import COLORS, BLACK, WHITE, GRAY, LIGHT_BROWN, DARK_BROWN, SPECIAL_BLOCK_WIDTH, SPECIAL_BLOCK_HEIGHT
 import random
 import math
 
@@ -39,6 +39,17 @@ class Renderer:
             self.click_sound = pygame.mixer.Sound(click_sound_path)
         else:
             self.click_sound = None
+        
+        # Load special block image
+        bomb_block_path = os.path.join(img_dir, 'bombBlock.png')
+        if os.path.exists(bomb_block_path):
+            bomb_img = pygame.image.load(bomb_block_path)
+            # Scale to 3x6 block size
+            special_width = block_pixel_size * SPECIAL_BLOCK_WIDTH - 2
+            special_height = block_pixel_size * SPECIAL_BLOCK_HEIGHT - 2
+            self.special_block_image = pygame.transform.scale(bomb_img, (special_width, special_height))
+        else:
+            self.special_block_image = None
         
         # Particle system for line clearing effects
         self.particles = []
@@ -159,6 +170,33 @@ class Renderer:
                         )
 
     def draw_piece(self, piece):
+        # Special block render
+        if piece.is_special:
+            if self.special_block_image is not None:
+
+                self.screen.blit(
+                    self.special_block_image,
+                    (
+                        self.xStart + self.block_pixel_size * piece.xShift + 1,
+                        self.yStart + self.block_pixel_size * piece.yShift + 1
+                    )
+                )
+            else:
+                for i in range(SPECIAL_BLOCK_HEIGHT):
+                    for j in range(SPECIAL_BLOCK_WIDTH):
+                        pygame.draw.rect(
+                            self.screen,
+                            (255, 0, 0),
+                            [
+                                self.xStart + self.block_pixel_size * (j + piece.xShift) + 1,
+                                self.yStart + self.block_pixel_size * (i + piece.yShift) + 1,
+                                self.block_pixel_size - 2,
+                                self.block_pixel_size - 2
+                            ]
+                        )
+            return
+        
+        # Normal
         figure = piece.get_figure()
         for i in range(4):
             for j in range(4):

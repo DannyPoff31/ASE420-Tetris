@@ -26,3 +26,7 @@ FIGURES = (
     [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],       # T Piece
     [[1, 2, 5, 6]], # O (square) piece
 )
+
+SPECIAL_BLOCK_WIDTH = 3
+SPECIAL_BLOCK_HEIGHT = 6
+SPECIAL_BLOCK_INTERVAL = 15  # Every 15 blocks, spawn special block

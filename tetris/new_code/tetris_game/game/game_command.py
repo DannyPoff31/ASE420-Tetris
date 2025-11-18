@@ -34,6 +34,10 @@ class RotateCommand(Command):
         self.piece = piece
         self.board = board
 
+        # Special blocks cannot rotate
+        if piece.is_special:
+            return False
+
         #Store old rotation
         old_rotation = piece.rotation
         if self.clockwise:
