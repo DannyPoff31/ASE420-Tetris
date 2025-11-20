@@ -14,6 +14,7 @@ from ..game.board import Board
 from ..game.piece_action import PieceAction
 
 from ..game.game_command import CommandFacotry
+from ..main.constants import SPECIAL_BLOCK_INTERVAL, SPECIAL_BLOCK_WIDTH
 
 class Game(States):
     def __init__(self, config, input, renderer):
@@ -73,6 +74,9 @@ class Game(States):
         self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
 
         self.points = 0
+        
+        # Special block counter
+        self.blocks_placed = 0
 
         # Set the level to 1
         self.config.level = 1
@@ -109,18 +113,35 @@ class Game(States):
                 if command:
                     result = command.execute(self.piece, self.board)
                     if result is not None and result is not False:
-                        # Hard drop was executed - result is lines_broken
-                        lines_broken = result
-                        self.total_lines_broken += lines_broken
+                        # Hard drop was executed - result is (lines_broken, cleared_indices)
+                        if isinstance(result, tuple):
+                            lines_broken, cleared_indices = result
+                        else:
+                            lines_broken = result
+                            cleared_indices = []
+                        # Play click sound when block is placed (hard drop)
+                        self.renderer.play_click_sound()
+                        # Create particles for each cleared line
+                        for line_y in cleared_indices:
+                            self.renderer.create_line_clear_particles(line_y, self.board_width)
                         if lines_broken > 0:
-                            self._calculate_points(lines_broken)
+                            self.calculate_points(lines_broken)
+                        self.blocks_placed += 1
                         need_new_piece = True
 
         if need_new_piece:
         # Create new piece (after hard drop)
-            self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
-                              self.next_piece.type, self.next_piece.color)
-            self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+            # Check if it's time for special block
+            if self.blocks_placed % SPECIAL_BLOCK_INTERVAL == 0:
+                # Spawn special block (3x6, centered)
+                special_x = (self.board_width - SPECIAL_BLOCK_WIDTH) // 2
+                self.piece = Piece(special_x, self.piece_start_yPos, is_special=True)
+                self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+            else:
+                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
+                                  self.next_piece.type, self.next_piece.color)
+                self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+            
             if self.board.intersects(self.piece):
                 return "gameover"
             
@@ -145,12 +166,26 @@ class Game(States):
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
-                lines_broken = self.board.freeze_piece(self.piece)
+                lines_broken, cleared_indices = self.board.freeze_piece(self.piece)
+                # Play click sound when block is placed
+                self.renderer.play_click_sound()
+                # Create particles for each cleared line
+                for line_y in cleared_indices:
+                    self.renderer.create_line_clear_particles(line_y, self.board_width)
                 if lines_broken > 0:
-                    self._calculate_points(lines_broken)
-                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
-                                  self.next_piece.type, self.next_piece.color)
-                self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                    self.calculate_points(lines_broken)
+                self.blocks_placed += 1
+                
+                if self.blocks_placed % SPECIAL_BLOCK_INTERVAL == 0:
+                    # Spawn special block
+                    special_x = (self.board_width - SPECIAL_BLOCK_WIDTH) // 2
+                    self.piece = Piece(special_x, self.piece_start_yPos, is_special=True)
+                    self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                else:
+                    self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
+                                      self.next_piece.type, self.next_piece.color)
+                    self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                
                 # Check for game over
                 if self.board.intersects(self.piece):
                     return "gameover"
@@ -164,7 +199,9 @@ class Game(States):
         self.renderer.draw_piece(self.piece)
         self.renderer.draw_score(self.points)
         self.renderer.draw_next_piece(self.next_piece)
-        self.renderer.draw_level(self.config.level)
+        # Update and draw particles
+        self.renderer.update_particles()
+        self.renderer.draw_particles()
 
     def toggle_pause():
         return 'pause'

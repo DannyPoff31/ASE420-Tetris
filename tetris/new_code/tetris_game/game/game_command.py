@@ -34,6 +34,10 @@ class RotateCommand(Command):
         self.piece = piece
         self.board = board
 
+        # Special blocks cannot rotate
+        if piece.is_special:
+            return False
+
         #Store old rotation
         old_rotation = piece.rotation
         if self.clockwise:
@@ -61,8 +65,9 @@ class SoftDropCommand(Command):
     
 class HardDropCommand(Command):
     def execute(self, piece, board):
-        lines_broken = piece.instant_drop(board)
-        return lines_broken  # Return the actual lines cleared, not just True
+        result = piece.instant_drop(board)
+        # Return tuple (lines_broken, cleared_indices) if available, otherwise just lines_broken
+        return result
     
 # Creates a command map based on the enum commands listed in piece_action.py
 class CommandFacotry:

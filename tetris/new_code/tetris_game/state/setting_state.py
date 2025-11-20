@@ -19,11 +19,9 @@ class Setting(States):
         print(self.controls)
 
         # Buttons to change controls
-        self.button = [
-            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
-            {"label": "This is the settings page", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
-            {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
-            {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
+        self.buttons = [
+            {"label": "Back to Menu", "rect": pygame.Rect(100, 240, 200, 50), "action": "menu"},
+            {"label": "Quit", "rect": pygame.Rect(100, 310, 200, 50), "action": "quit"}
         ]
 
     def cleanup(self):
@@ -41,6 +39,8 @@ class Setting(States):
                 mouse_pos = event.pos
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
+                        # Play click sound when button is clicked
+                        self.renderer.play_click_sound()
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once
@@ -52,6 +52,6 @@ class Setting(States):
         # Clear screen
         self.renderer.clear()
 
-        # Render the main menu
-        self.renderer.render_menu(self.button)
+        # Render the settings menu
+        self.renderer.render_menu(self.buttons)
 

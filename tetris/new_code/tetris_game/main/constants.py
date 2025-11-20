@@ -2,6 +2,8 @@
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (128, 128, 128)
+LIGHT_BROWN = (222, 184, 135)
+DARK_BROWN = (101, 67, 33)
 
 # Piece Colors
 COLORS = (
@@ -24,3 +26,7 @@ FIGURES = (
     [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],       # T Piece
     [[1, 2, 5, 6]], # O (square) piece
 )
+
+SPECIAL_BLOCK_WIDTH = 3
+SPECIAL_BLOCK_HEIGHT = 6
+SPECIAL_BLOCK_INTERVAL = 15  # Every 15 blocks, spawn special block
