@@ -127,6 +127,8 @@ class Game(States):
                 special_x = (self.board_width - SPECIAL_BLOCK_WIDTH) // 2
                 self.piece = Piece(special_x, self.piece_start_yPos, is_special=True)
                 self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                # Trigger screen flash effect
+                self.renderer.trigger_screen_flash()
             else:
                 self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
                                   self.next_piece.type, self.next_piece.color)
@@ -155,12 +157,29 @@ class Game(States):
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
-                lines_broken, cleared_indices = self.board.freeze_piece(self.piece)
+                result = self.board.freeze_piece(self.piece)
+                if isinstance(result, tuple) and len(result) == 3:
+                    lines_broken, cleared_indices, cleared_columns = result
+                elif isinstance(result, tuple) and len(result) == 2:
+                    lines_broken, cleared_indices = result
+                    cleared_columns = []
+                else:
+                    lines_broken = result
+                    cleared_indices = []
+                    cleared_columns = []
+                
                 # Play click sound when block is placed
                 self.renderer.play_click_sound()
-                # Create particles for each cleared line
-                for line_y in cleared_indices:
-                    self.renderer.create_line_clear_particles(line_y, self.board_width)
+                
+                # Special block: create flame effect for cleared columns
+                if self.piece.is_special and cleared_columns:
+                    for col_x in cleared_columns:
+                        self.renderer.create_column_flame_effect(col_x, self.board_height)
+                else:
+                    # Normal block: create particles for each cleared line
+                    for line_y in cleared_indices:
+                        self.renderer.create_line_clear_particles(line_y, self.board_width)
+                
                 if lines_broken > 0:
                     self.calculate_points(lines_broken)
                 self.blocks_placed += 1
@@ -170,6 +189,8 @@ class Game(States):
                     special_x = (self.board_width - SPECIAL_BLOCK_WIDTH) // 2
                     self.piece = Piece(special_x, self.piece_start_yPos, is_special=True)
                     self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                    # Trigger screen flash effect
+                    self.renderer.trigger_screen_flash()
                 else:
                     self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
                                       self.next_piece.type, self.next_piece.color)
@@ -191,6 +212,14 @@ class Game(States):
         # Update and draw particles
         self.renderer.update_particles()
         self.renderer.draw_particles()
+        # Update and draw special block effects
+        self.renderer.update_flame_particles()
+        self.renderer.draw_flame_particles()
+        self.renderer.update_column_flame_particles()
+        self.renderer.draw_column_flame_particles()
+        # Update and draw screen flash
+        self.renderer.update_screen_flash()
+        self.renderer.draw_screen_flash()
 
     def toggle_pause():
         return 'pause'

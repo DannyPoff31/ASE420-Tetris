@@ -53,6 +53,12 @@ class Renderer:
         
         # Particle system for line clearing effects
         self.particles = []
+        
+        # Special block effects
+        self.screen_flash_alpha = 0  # Screen flash effect (0-255)
+        self.screen_flash_duration = 0  # Frames remaining for flash
+        self.flame_particles = []  # Flame particles above special block
+        self.column_flame_particles = []  # Flame particles falling down cleared columns
     
     def play_click_sound(self):
         """Play the click sound effect"""
@@ -128,6 +134,143 @@ class Renderer:
                 (int(particle['x']), int(particle['y'])),
                 particle['size']
             )
+    
+    def trigger_screen_flash(self):
+        """Trigger red screen flash effect"""
+        self.screen_flash_duration = 30
+        self.screen_flash_alpha = 150
+    
+    def update_screen_flash(self):
+        """Update screen flash effect"""
+        if self.screen_flash_duration > 0:
+            # Pulsing effect: fade in and out
+            pulse = math.sin((30 - self.screen_flash_duration) * 0.5) * 0.5 + 0.5
+            self.screen_flash_alpha = int(100 + pulse * 100)
+            self.screen_flash_duration -= 1
+        else:
+            self.screen_flash_alpha = 0
+    
+    def draw_screen_flash(self):
+        """Draw red screen flash overlay"""
+        if self.screen_flash_alpha > 0:
+            flash_surface = pygame.Surface(self.screen.get_size())
+            flash_surface.set_alpha(self.screen_flash_alpha)
+            flash_surface.fill((255, 0, 0))
+            self.screen.blit(flash_surface, (0, 0))
+    
+    def create_flame_particles(self, x, y, width):
+        """Create flame particles above special block"""
+        # Create flame particles on the special block
+        for _ in range(3):
+            offset_x = random.uniform(0, width)
+            flame_x = x + offset_x
+            flame_y = y - random.randint(5, 15)  # Above the block
+            
+            # Flame color
+            color_choice = random.choice([
+                (255, 50, 0),
+                (255, 100, 0),
+                (255, 150, 0),
+                (255, 200, 50),
+            ])
+            
+            vx = random.uniform(-0.5, 0.5)
+            vy = random.uniform(-2, -0.5)
+            
+            self.flame_particles.append({
+                'x': flame_x,
+                'y': flame_y,
+                'vx': vx,
+                'vy': vy,
+                'color': color_choice,
+                'lifetime': random.randint(15, 25),
+                'age': 0,
+                'size': random.randint(3, 6)
+            })
+    
+    def update_flame_particles(self):
+        """Update flame particles"""
+        for particle in self.flame_particles[:]:
+            particle['x'] += particle['vx']
+            particle['y'] += particle['vy']
+            particle['vy'] += 0.1
+            particle['age'] += 1
+            
+            if particle['age'] >= particle['lifetime']:
+                self.flame_particles.remove(particle)
+    
+    def draw_flame_particles(self):
+        """Draw flame particles"""
+        for particle in self.flame_particles:
+            fade = 1 - (particle['age'] / particle['lifetime'])
+            color = tuple(min(255, max(0, int(c * fade))) for c in particle['color'])
+            
+            pygame.draw.circle(
+                self.screen,
+                color,
+                (int(particle['x']), int(particle['y'])),
+                int(particle['size'] * fade)
+            )
+    
+    def create_column_flame_effect(self, column_x, board_height):
+        """Create flame effect falling down a cleared column"""
+        screen_x = self.xStart + self.block_pixel_size * column_x + self.block_pixel_size // 2
+        
+        for i in range(board_height):
+            screen_y = self.yStart + self.block_pixel_size * i + self.block_pixel_size // 2
+            
+            for _ in range(2):
+                flame_x = screen_x + random.uniform(-5, 5)
+                flame_y = screen_y + random.uniform(-3, 3)
+                
+                color_choice = random.choice([
+                    (255, 50, 0),
+                    (255, 100, 0),
+                    (255, 150, 0),
+                    (255, 200, 50),
+                ])
+                
+                vx = random.uniform(-0.3, 0.3)
+                vy = random.uniform(1, 3)
+                
+                delay = i * 2
+                
+                self.column_flame_particles.append({
+                    'x': flame_x,
+                    'y': flame_y,
+                    'vx': vx,
+                    'vy': vy,
+                    'color': color_choice,
+                    'lifetime': random.randint(20, 35),
+                    'age': -delay,
+                    'size': random.randint(4, 7)
+                })
+    
+    def update_column_flame_particles(self):
+        """Update column flame particles"""
+        for particle in self.column_flame_particles[:]:
+            if particle['age'] >= 0:
+                particle['x'] += particle['vx']
+                particle['y'] += particle['vy']
+                particle['vy'] += 0.15
+            particle['age'] += 1
+            
+            if particle['age'] >= particle['lifetime']:
+                self.column_flame_particles.remove(particle)
+    
+    def draw_column_flame_particles(self):
+        """Draw column flame particles"""
+        for particle in self.column_flame_particles:
+            if particle['age'] >= 0:
+                fade = 1 - (particle['age'] / particle['lifetime'])
+                color = tuple(min(255, max(0, int(c * fade))) for c in particle['color'])
+                
+                pygame.draw.circle(
+                    self.screen,
+                    color,
+                    (int(particle['x']), int(particle['y'])),
+                    int(particle['size'] * fade)
+                )
 
     def render_board(self, board):
         self.screen.fill(LIGHT_BROWN)
@@ -172,6 +315,14 @@ class Renderer:
     def draw_piece(self, piece):
         # Special block render
         if piece.is_special:
+            # Create flame particles above special block
+            block_top_x = self.xStart + self.block_pixel_size * piece.xShift + 1
+            block_top_y = self.yStart + self.block_pixel_size * piece.yShift + 1
+            block_width = self.block_pixel_size * SPECIAL_BLOCK_WIDTH - 2
+            # Create flame particles
+            if random.random() < 0.3:
+                self.create_flame_particles(block_top_x, block_top_y, block_width)
+            
             if self.special_block_image is not None:
 
                 self.screen.blit(
@@ -344,4 +495,8 @@ class Renderer:
     def clear(self):
         self.screen.fill(LIGHT_BROWN)
         self.particles = []  # Clear particles when clearing screen
+        self.flame_particles = []  # Clear flame particles
+        self.column_flame_particles = []  # Clear column flame particles
+        self.screen_flash_alpha = 0  # Reset screen flash
+        self.screen_flash_duration = 0
         return

@@ -81,9 +81,9 @@ class Board:
                     if (0 <= board_y < self.height and 0 <= board_x < self.width):
                         self.field[board_y][board_x] = -1  # Special marker
             
-            self.process_special_block(piece.xShift, piece.yShift)
+            cleared_columns = self.process_special_block(piece.xShift, piece.yShift)
 
-            return 0, []
+            return 0, [], cleared_columns
         
         for i in range(4):
             for j in range(4):
@@ -110,12 +110,16 @@ class Board:
         
         # Special block falls down and clearing all blocks in 3 lines
         # Clear all blocks in the 3 columns from top to bottom (entire columns)
+        cleared_columns = []
         for j in range(SPECIAL_BLOCK_WIDTH):
             col_x = start_x + j
             if 0 <= col_x < self.width:
+                cleared_columns.append(col_x)
                 for i in range(self.height):
                     if self.field[i][col_x] > 0:
                         self.field[i][col_x] = 0
+        
+        return cleared_columns
     
     def break_lines(self):
         lines = 0
