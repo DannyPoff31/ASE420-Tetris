@@ -1,6 +1,6 @@
 import pygame # type: ignore (ignores the "could not resolve" error)
 import sys
-from .state import States
+from .abstract_state import States
 
 
 class GameOver(States):

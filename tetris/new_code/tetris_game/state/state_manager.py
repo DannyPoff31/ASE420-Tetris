@@ -3,7 +3,7 @@ Author: Nathaniel Brewer
 Class to manage the states, their transitions, delegating updates etc.
 """
 
-from .state import States
+from .abstract_state import States
 from .game_state import Game
 from .gameover_state import GameOver
 from .menu_state import Menu
