@@ -125,7 +125,7 @@ class Game(States):
                         for line_y in cleared_indices:
                             self.renderer.create_line_clear_particles(line_y, self.board_width)
                         if lines_broken > 0:
-                            self.calculate_points(lines_broken)
+                            self._calculate_points(lines_broken)
                         self.blocks_placed += 1
                         need_new_piece = True
 
@@ -192,7 +192,7 @@ class Game(States):
                         self.renderer.create_line_clear_particles(line_y, self.board_width)
                 
                 if lines_broken > 0:
-                    self.calculate_points(lines_broken)
+                    self._calculate_points(lines_broken)
                 self.blocks_placed += 1
                 
                 if self.blocks_placed % SPECIAL_BLOCK_INTERVAL == 0:
