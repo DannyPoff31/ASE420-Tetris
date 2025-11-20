@@ -21,6 +21,9 @@ class Config:
 
         self.counter = 0
 
+        # The amount the counter will increase. 
+        self.level = 1
+
 
     # On creation of the config object it wi
     def _check_for_config(self):
