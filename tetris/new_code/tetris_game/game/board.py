@@ -1,5 +1,7 @@
 """
-Author: Nathaniel Brewer
+    Author: Nathaniel Brewer
+
+    All board management is handled here, and will save the current state of the board
 """
 import pygame # type: ignore
 from ..main.constants import BLACK, WHITE, GRAY

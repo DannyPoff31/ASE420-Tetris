@@ -1,3 +1,8 @@
+"""
+    Author: Nathaniel Brewer
+
+    Input mapping for the game and other input based logic
+"""
 import pygame # type: ignore (ignores the "could not resolve" error)
  
 from ..game.piece_action import PieceAction
@@ -33,3 +38,15 @@ class Input:
         keys = pygame.key.get_pressed()
         down_key = self.config.get_control('soft_drop')
         return keys[down_key]
+    
+    def reload_key_mappings(self):
+        """Reload key mappings from config after controls have been updated."""
+        self.key_to_action = {
+            self.config.get_control('move_left') : PieceAction.MOVE_LEFT,
+            self.config.get_control('move_right'): PieceAction.MOVE_RIGHT,
+            self.config.get_control('soft_drop'): PieceAction.SOFT_DROP,
+            self.config.get_control('hard_drop'): PieceAction.HARD_DROP,
+            self.config.get_control('rotate'): PieceAction.ROTATE_CLOCKWISE,
+            self.config.get_control('pause'): PieceAction.PAUSE,
+            self.config.get_control('quit'): PieceAction.QUIT
+        }

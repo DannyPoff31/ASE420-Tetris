@@ -24,3 +24,7 @@ FIGURES = (
     [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],       # T Piece
     [[1, 2, 5, 6]], # O (square) piece
 )
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

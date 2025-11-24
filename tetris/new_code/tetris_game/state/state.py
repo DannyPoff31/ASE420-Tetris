@@ -1,5 +1,7 @@
 """
-This is the abstract class that all states are children too
+    Author: Nathaniel Brewer
+
+    This is the abstract class that all states will have to overwrite
 """
 
 import pygame as pg # type: ignore (ignores the "could not resolve" error)

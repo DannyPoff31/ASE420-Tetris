@@ -4,12 +4,15 @@
     "window_height": 500,
     "fps": 25
   },
+  "sound": {
+    "play_sounds": false
+  },
   "controls": {
-    "move_left": 1073741904,
-    "move_right": 1073741903,
-    "soft_drop": 1073741905,
+    "move_left": 97,
+    "move_right": 100,
+    "soft_drop": 115,
     "hard_drop": 32,
-    "rotate": 1073741906,
+    "rotate": 119,
     "quit": 113,
     "pause": 27
   }

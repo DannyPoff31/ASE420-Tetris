@@ -1,7 +1,16 @@
+<<<<<<< Updated upstream
 import pygame # type: ignore (ignores the "could not resolve" error)
 import sys
 from .state import States
+=======
+"""
+    Author: Nathaniel Brewer
+>>>>>>> Stashed changes
 
+    Gameover state child of abstract_state, appears when the player loses
+"""
+import pygame # type: ignore (ignores the "could not resolve" error)
+from .abstract_state import States
 
 class GameOver(States):
     def __init__(self, config, input, renderer):
@@ -33,6 +42,11 @@ class GameOver(States):
                 mouse_pos = event.pos
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
+<<<<<<< Updated upstream
+=======
+                        # Play click sound when button is clicked
+                        self.config.play_click_sound()
+>>>>>>> Stashed changes
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once

@@ -1,6 +1,15 @@
+"""
+    Author: Nathaniel Brewer
+
+    Menu state, child of abstract_state. Handles all things to do on the menu and returns the desired location to the state_manager
+"""
 import pygame # type: ignore
+<<<<<<< Updated upstream
 import sys
 from .state import States
+=======
+from .abstract_state import States
+>>>>>>> Stashed changes
 
 class Menu(States):
     def __init__(self, config, input, renderer):
@@ -36,6 +45,11 @@ class Menu(States):
                 mouse_pos = event.pos
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
+<<<<<<< Updated upstream
+=======
+                        # Play click sound when button is clicked
+                        self.config.play_click_sound()
+>>>>>>> Stashed changes
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once

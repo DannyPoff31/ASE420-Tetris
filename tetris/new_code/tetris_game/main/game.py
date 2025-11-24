@@ -1,5 +1,7 @@
 """
-Author: Nathaniel Brewer
+    Author: Nathaniel Brewer
+
+    The main game run loop, inits all things for the game to begin properly
 """
 import pygame # type: ignore (ignores the "could not resolve" error)
 

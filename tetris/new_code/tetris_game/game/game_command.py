@@ -1,6 +1,8 @@
 """
-This is the place when commands (such as rotate) are handled and executed. 
-This is only for game commands that affect the pieces themselves
+    Author: Nathaniel Brewer
+
+    This is the place when commands (such as rotate) are handled and executed. 
+    This is only for game commands that affect the pieces themselves
 """
 
 from abc import ABC, abstractmethod
@@ -34,7 +36,15 @@ class RotateCommand(Command):
         self.piece = piece
         self.board = board
 
+<<<<<<< Updated upstream
         #Store old rotation
+=======
+        # Special blocks cannot rotate
+        if piece.is_special:
+            return False
+
+        # Store old rotation
+>>>>>>> Stashed changes
         old_rotation = piece.rotation
         if self.clockwise:
             piece.rotation = (piece.rotation + 1) % len(piece.figures[piece.type])

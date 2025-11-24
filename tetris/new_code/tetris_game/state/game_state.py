@@ -1,8 +1,8 @@
 """
-Author: Nathaniel Brewer
+    Author: Nathaniel Brewer
 
-This is the game state, this is where all the game logic will occur and any variables pertaining to the actual playing
-of tetris will occur.
+    This is the game state, this is where all the game logic will occur and any variables pertaining to the actual playing
+    of tetris will occur.
 """
 
 import pygame as pg # type: ignore (ignores the "could not resolve" error)
@@ -11,7 +11,7 @@ from .state import States
 
 from ..game.piece import Piece
 from ..game.board import Board
-from ..game.piece_action import PieceAction
+from ..game.piece.piece_action import PieceAction
 
 from ..game.game_command import CommandFacotry
 
@@ -91,15 +91,52 @@ class Game(States):
                 if command:
                     result = command.execute(self.piece, self.board)
                     if result is not None and result is not False:
+<<<<<<< Updated upstream
                         # Hard drop was executed - result is lines_broken
                         lines_broken = result
                         if lines_broken > 0:
                             self.calculate_points(lines_broken)
+=======
+                        # Hard drop was executed - result is (lines_broken, cleared_indices)
+                        if isinstance(result, tuple):
+                            lines_broken, cleared_indices = result
+                        else:
+                            lines_broken = result
+                            cleared_indices = []
+                        # Play click sound when block is placed (hard drop)
+                        self.config.play_click_sound()
+                        # Create particles for each cleared line
+                        for line_y in cleared_indices:
+                            self.renderer.create_line_clear_particles(line_y, self.board_width)
+                        if lines_broken > 0:
+                            self._calculate_points(lines_broken)
+                        self.blocks_placed += 1
+>>>>>>> Stashed changes
                         need_new_piece = True
 
         if need_new_piece:
         # Create new piece (after hard drop)
+<<<<<<< Updated upstream
             self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+=======
+            # Check if it's time for special block
+            if self.blocks_placed % SPECIAL_BLOCK_INTERVAL == 0:
+
+                # Spawn special block (3x6, centered)
+                special_x = (self.board_width - SPECIAL_BLOCK_WIDTH) // 2
+
+                self.piece = Piece(special_x, self.piece_start_yPos, is_special=True)
+
+                self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                
+                # Trigger screen flash effect
+                self.renderer.trigger_screen_flash()
+            else:
+                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
+                                  self.next_piece.type, self.next_piece.color)
+                self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+            
+>>>>>>> Stashed changes
             if self.board.intersects(self.piece):
                 return "gameover"
             
@@ -123,11 +160,55 @@ class Game(States):
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
+<<<<<<< Updated upstream
                 lines_broken = self.board.freeze_piece(self.piece)
                 if lines_broken > 0:
                     self.calculate_points(lines_broken)
                 # Create a new piece
                 self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+=======
+                result = self.board.freeze_piece(self.piece)
+
+                # Special Block 
+                if isinstance(result, tuple) and len(result) == 3:
+                    lines_broken, cleared_indices, cleared_columns = result
+                elif isinstance(result, tuple) and len(result) == 2:
+                    lines_broken, cleared_indices = result
+                    cleared_columns = []
+                else:
+                    lines_broken = result
+                    cleared_indices = []
+                    cleared_columns = []
+                
+                # Play click sound when block is placed
+                self.config.play_click_sound()
+                
+                # Special block: create flame effect for cleared columns
+                if self.piece.is_special and cleared_columns:
+                    for col_x in cleared_columns:
+                        self.renderer.create_column_flame_effect(col_x, self.board_height)
+                else:
+                    # Normal block: create particles for each cleared line
+                    for line_y in cleared_indices:
+                        self.renderer.create_line_clear_particles(line_y, self.board_width)
+                
+                if lines_broken > 0:
+                    self._calculate_points(lines_broken)
+                self.blocks_placed += 1
+                
+                if self.blocks_placed % SPECIAL_BLOCK_INTERVAL == 0:
+                    # Spawn special block
+                    special_x = (self.board_width - SPECIAL_BLOCK_WIDTH) // 2
+                    self.piece = Piece(special_x, self.piece_start_yPos, is_special=True)
+                    self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                    # Trigger screen flash effect
+                    self.renderer.trigger_screen_flash()
+                else:
+                    self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
+                                      self.next_piece.type, self.next_piece.color)
+                    self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
+                
+>>>>>>> Stashed changes
                 # Check for game over
                 if self.board.intersects(self.piece):
                     return "gameover"
