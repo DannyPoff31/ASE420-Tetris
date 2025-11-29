@@ -4,18 +4,12 @@
     Pause state, child of abstract_state, handled by the enhanced_game_state to maintain the current game state.
 """
 import pygame# type: ignore (ignores the "could not resolve" error)
+from .abstract_state import AbstractState
 
-from .state import States
-
-class Pause(States):
+class Pause(AbstractState):
     def __init__(self, config, input, renderer):
-        States.__init__(self, config, input, renderer)
+        super.__init__(self, config, input, renderer)
         self.next = 'pause'
-
-        # Injected Dependencies
-        self.config = config
-        self.input = input
-        self.renderer = renderer
 
         self.drawn = False
 
@@ -46,11 +40,8 @@ class Pause(States):
                 mouse_pos = event.pos
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
-<<<<<<< Updated upstream
-=======
                         # Play click sound when button is clicked
                         self.config.play_click_sound()
->>>>>>> Stashed changes
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once

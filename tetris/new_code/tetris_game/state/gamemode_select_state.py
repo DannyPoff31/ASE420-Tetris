@@ -1,28 +1,18 @@
 """
     Author: Nathaniel Brewer
-
-    Menu state, child of abstract_state. Handles all things to do on the menu and returns the desired location to the state_manager
 """
 import pygame # type: ignore
-from .abstract_state import AbstractState
+from .abstract_state import States
 
-class Menu(AbstractState):
+class GamemodeSelection(States):
     def __init__(self, config, input, renderer):
         super.__init__(self, config, input, renderer)
         self.next = 'game'
 
         self.drawn = False
-        
-        # Menu buttons
-        self.buttons = [
-            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
-            {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
-            {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
-        ]
 
     def cleanup(self):
         self.renderer.clear()
-        self.startup()
 
     def startup(self):
         self.drawn = False
@@ -45,8 +35,7 @@ class Menu(AbstractState):
         return 'menu'
 
     def draw(self):
-        # Clear screen
-        self.renderer.clear()
+        self.rendereer.clear()
 
-        # Render the main menu
-        self.renderer.render_menu(self.buttons)
+        self.renderer.render_gamemode_screen()
+        pass

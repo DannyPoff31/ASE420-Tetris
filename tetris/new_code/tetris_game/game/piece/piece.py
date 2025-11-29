@@ -39,7 +39,7 @@ class Piece(AbstractPiece):
         while not board.intersects(self):
             self.yShift += 1 
         self.yShift -= 1
-        result = board.freeze_piece(self)
+        result = self._freeze(board)
         # Return tuple (lines_broken, cleared_indices)
         return result
 
@@ -61,7 +61,7 @@ class Piece(AbstractPiece):
         ):
             self.yShift += 1
         self.yShift -= 1
-        return board.freeze_piece(self)
+        return self._freeze(board)
 
     def get_figure(self):
         return self.figures[self.type][self.rotation]

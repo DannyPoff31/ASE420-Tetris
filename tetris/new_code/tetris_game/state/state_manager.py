@@ -3,12 +3,13 @@ Author: Nathaniel Brewer
 Class to manage the states, their transitions, delegating updates etc.
 """
 
-from .state import States
+from .abstract_state import AbstractState
 from .game_state import Game
 from .gameover_state import GameOver
 from .menu_state import Menu
 from .setting_state import Setting
 from .pause_state import Pause
+from .gamemode_select_state import GamemodeSelection
 
 class StateManager():
     def __init__(self, config, input, renderer):
@@ -23,6 +24,7 @@ class StateManager():
         self.states = {
             'pause': Pause(config=self.config, input=self.input, renderer=self.renderer),
             'game': Game(config=self.config, input=self.input, renderer=self.renderer),
+            'gamemode': GamemodeSelection(config=self.config, input=self.input,renderer=self.renderer),
             'gameover': GameOver(config=self.config, input=self.input, renderer=self.renderer),
             'menu': Menu(config=self.config, input=self.input, renderer=self.renderer),
             'settings': Setting(config=self.config, input=self.input, renderer=self.renderer),

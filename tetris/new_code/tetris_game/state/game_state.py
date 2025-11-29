@@ -5,9 +5,7 @@
     of tetris will occur.
 """
 
-import pygame as pg # type: ignore (ignores the "could not resolve" error)
-import sys
-from .state import States
+from .abstract_state import AbstractState
 
 from ..game.piece import Piece
 from ..game.board import Board
@@ -15,15 +13,10 @@ from ..game.piece.piece_action import PieceAction
 
 from ..game.game_command import CommandFacotry
 
-class Game(States):
+class Game(AbstractState):
     def __init__(self, config, input, renderer):
-        States.__init__(self, config, input, renderer)
+        super.__init__(self, config, input, renderer)
         self.next = 'gameover'
-
-        # Injected Dependencies
-        self.config = config
-        self.renderer = renderer
-        self.input = input
 
         self.game_actions = {
             PieceAction.PAUSE: 'pause'
@@ -91,12 +84,6 @@ class Game(States):
                 if command:
                     result = command.execute(self.piece, self.board)
                     if result is not None and result is not False:
-<<<<<<< Updated upstream
-                        # Hard drop was executed - result is lines_broken
-                        lines_broken = result
-                        if lines_broken > 0:
-                            self.calculate_points(lines_broken)
-=======
                         # Hard drop was executed - result is (lines_broken, cleared_indices)
                         if isinstance(result, tuple):
                             lines_broken, cleared_indices = result
@@ -111,14 +98,11 @@ class Game(States):
                         if lines_broken > 0:
                             self._calculate_points(lines_broken)
                         self.blocks_placed += 1
->>>>>>> Stashed changes
                         need_new_piece = True
 
         if need_new_piece:
         # Create new piece (after hard drop)
-<<<<<<< Updated upstream
-            self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
-=======
+
             # Check if it's time for special block
             if self.blocks_placed % SPECIAL_BLOCK_INTERVAL == 0:
 
@@ -131,12 +115,12 @@ class Game(States):
                 
                 # Trigger screen flash effect
                 self.renderer.trigger_screen_flash()
+                
             else:
                 self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos, 
                                   self.next_piece.type, self.next_piece.color)
                 self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
             
->>>>>>> Stashed changes
             if self.board.intersects(self.piece):
                 return "gameover"
             
@@ -160,13 +144,6 @@ class Game(States):
             if self.board.intersects(self.piece):
                 self.piece.yShift = old_y
                 # Freeze the piece
-<<<<<<< Updated upstream
-                lines_broken = self.board.freeze_piece(self.piece)
-                if lines_broken > 0:
-                    self.calculate_points(lines_broken)
-                # Create a new piece
-                self.piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
-=======
                 result = self.board.freeze_piece(self.piece)
 
                 # Special Block 
@@ -208,7 +185,6 @@ class Game(States):
                                       self.next_piece.type, self.next_piece.color)
                     self.next_piece = Piece(self.piece_start_xPos, self.piece_start_yPos)
                 
->>>>>>> Stashed changes
                 # Check for game over
                 if self.board.intersects(self.piece):
                     return "gameover"

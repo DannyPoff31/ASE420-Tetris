@@ -4,19 +4,11 @@
     Settings state, child of abstract_state. Handles all things to do with settings
 """
 import pygame
-<<<<<<< Updated upstream
-import sys
-from .state import States
-=======
-from .abstract_state import States
->>>>>>> Stashed changes
+from .abstract_state import AbstractState
 
-class Setting(States):
+class Setting(AbstractState):
     def __init__(self, config, input, renderer):
-        States.__init__(self, config, input, renderer)
-        self.config = config
-        self.input = input
-        self.renderer = renderer
+        super.__init__(self, config, input, renderer)
         
         self.drawn = False
 
@@ -34,16 +26,6 @@ class Setting(States):
         self.remapping_action = None
         self.waiting_for_input = False
 
-<<<<<<< Updated upstream
-        print(self.controls)
-
-        # Buttons to change controls
-        self.button = [
-            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
-            {"label": "This is the settings page", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
-            {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
-            {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
-=======
         # Buttons for each control mapping
         self.control_buttons = []
         self._create_control_buttons()
@@ -58,7 +40,6 @@ class Setting(States):
         self.buttons = [
             {"label": "Save", "rect": pygame.Rect(start_x, 430, button_width, button_height)},
             {"label": "Back to Menu", "rect": pygame.Rect(start_x + button_width + button_spacing, 430, button_width, button_height), "action": "menu"},
->>>>>>> Stashed changes
         ]
 
     def _create_control_buttons(self):
@@ -136,11 +117,6 @@ class Setting(States):
                 # Check action buttons (Save, Back)
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
-<<<<<<< Updated upstream
-                        return button["action"]
-        if(not self.drawn):
-            # Only need to draw button states once
-=======
                         self.config.play_click_sound()
                         if button["label"] == "Save":
                             self._save_controls()
@@ -149,7 +125,6 @@ class Setting(States):
                             return button["action"]
         
         if not self.drawn:
->>>>>>> Stashed changes
             self.draw()
             self.drawn = True
         return 'settings'
@@ -171,11 +146,6 @@ class Setting(States):
     def draw(self):
         # Clear screen
         self.renderer.clear()
-<<<<<<< Updated upstream
-
-        # Render the main menu
-        self.renderer.render_menu(self.button)
-=======
         
         # Draw title
         font_large = pygame.font.Font(None, 48)
@@ -247,5 +217,4 @@ class Setting(States):
             self.renderer.screen.blit(label_surface, label_rect)
         
         pygame.display.flip()
->>>>>>> Stashed changes
 

@@ -4,11 +4,9 @@
     This is the abstract class that all states will have to overwrite
 """
 
-import pygame as pg # type: ignore (ignores the "could not resolve" error)
-import sys
 from abc import ABC, abstractmethod
 
-class States(ABC):
+class AbstractState(ABC):
     def __init__(self, config, input, renderer):
         self.done = False
         self.next = None
@@ -21,11 +19,15 @@ class States(ABC):
     @abstractmethod
     def cleanup(self):
         pass
+    
+    @abstractmethod
     def startup(self):
         pass
-    def get_event(self, event):
-        pass
+
+    @abstractmethod
     def update(self):
         pass
+
+    @abstractmethod
     def draw(self):
         pass

@@ -31,14 +31,14 @@ class RocketPiece(AbstractSpecialPiece):
         while not board.intersects(self):
             self.yShift += 1
         self.yShift -= 1
-        return board.freeze_piece(self)
+        return self._freeze(board)
     
         # When pressing instant drop key
     def instant_drop(self, board):
         while not board.intersects(self):
             self.yShift += 1 
         self.yShift -= 1
-        result = board.freeze_piece(self)
+        result = self._freeze(board)
         print(result)
         # Return tuple (lines_broken, cleared_indices)
         return result

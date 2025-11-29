@@ -34,6 +34,9 @@ class AbstractPiece(ABC):
     def get_figure(self):
         pass
 
+    def _freeze(self, board):
+        return board.freeze_piece(self)
+
     # When pressing instant drop key
     def instant_drop(self, board):
         while not board.intersects(self):
