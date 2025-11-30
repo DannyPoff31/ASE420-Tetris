@@ -10,6 +10,11 @@ from .abstract_state import AbstractState
 from ..game.piece.piece_action import PieceAction
 
 class Game(AbstractState):
+
+    vfx_reg = [
+
+    ]
+
     def __init__(self, config, input, renderer):
         super().__init__(config, input, renderer)
         self.next = 'gameover'
@@ -84,6 +89,11 @@ class Game(AbstractState):
         self.renderer.draw_score(self.gamemode.points)
         self.renderer.draw_level(self.gamemode.display_level)
         self.renderer.draw_next_piece(self.gamemode.next_piece)
+
+        self.renderer.handle_vfx_pool(self.gamemode.vfx_pool)
+        self.renderer.update_particles()
+        self.renderer.draw_particles()
+        self.gamemode.vfx_pool.clear()
 
     def toggle_pause():
         return 'pause'

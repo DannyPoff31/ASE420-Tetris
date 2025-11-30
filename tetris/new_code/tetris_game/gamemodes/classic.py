@@ -13,6 +13,9 @@ class Classic(AbstractGamemode):
 
         self.config = config
 
+        # All VFX commands will be accessed here from the 
+        self.vfx_pool = []
+
         # Fast down
         self.pressing_down = False
 
@@ -81,7 +84,7 @@ class Classic(AbstractGamemode):
                 
                 # Special Block 
 
-                lines_broken = result
+                lines_broken, cleared_indices = result
 
                 # Play click sound when block is placed
                 self.config.play_click_sound()
@@ -92,8 +95,13 @@ class Classic(AbstractGamemode):
                         #self.renderer.create_column_flame_effect(col_x, self.board_height)
                 #else:
                     # Normal block: create particles for each cleared line
-                    #for line_y in cleared_indices:
-                        #self.renderer.create_line_clear_particles(line_y, self.board_width)
+                                        # Create particles for each cleared line
+                for line_y in cleared_indices:
+                    self.vfx_pool.append({
+                        'type': 'line_clear',
+                        'line_y': line_y,
+                        'board_width': self.board_width
+                    })  
                 
                 if lines_broken > 0:
                     self.calculate_score(lines_broken)
@@ -119,19 +127,20 @@ class Classic(AbstractGamemode):
             result = command.execute(self.piece, self.board)
             if result is not None and result is not False:
                 # Hard drop was executed - result is (lines_broken, cleared_indices)
-                if isinstance(result, tuple):
                     lines_broken, cleared_indices = result
-                else:
-                    lines_broken = result
                     
                     self.total_lines_broken += lines_broken
 
-                    cleared_indices = []
                     # Play click sound when block is placed (hard drop)
                     self.config.play_click_sound()
+                    
                     # Create particles for each cleared line
-                    #for line_y in cleared_indices:
-                        #self.renderer.create_line_clear_particles(line_y, self.board_width)
+                    for line_y in cleared_indices:
+                        self.vfx_pool.append({
+                            'type': 'line_clear',
+                            'line_y': line_y,
+                            'board_width': self.board_width
+                        })
                     if lines_broken > 0:
                         self.calculate_score(lines_broken)
                     self.blocks_placed += 1
@@ -140,7 +149,6 @@ class Classic(AbstractGamemode):
         if need_new_piece:
             # Create new piece (after hard drop)
             self._create_pieces()
-            #self.renderer.trigger_screen_flash()
 
             # Check for game over with the new piece
             if self.board.intersects(self.piece):
@@ -152,3 +160,5 @@ class Classic(AbstractGamemode):
             self.display_level += 1
 
         return 'game'
+
+        

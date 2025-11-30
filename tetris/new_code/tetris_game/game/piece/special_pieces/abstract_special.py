@@ -28,10 +28,3 @@ class AbstractSpecialPiece(AbstractPiece):
     @abstractmethod
     def get_figure(self):
         pass
-
-    @abstractmethod
-    
-
-    @abstractmethod
-    def display_vfx(self):
-        pass

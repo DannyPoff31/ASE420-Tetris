@@ -58,12 +58,13 @@ class Board:
                     if (0 <= board_y < self.height and 0 <= board_x < self.width):
                         self.field[board_y][board_x] = piece.color
 
-        broken_lines = self.break_lines()
+        broken_lines, cleared_indices = self.break_lines()
         
-        return broken_lines
+        return broken_lines, cleared_indices
     
     def break_lines(self):
         lines = 0
+        cleared_indicies = [] # Which lines where broken
         i = self.height - 1  # Start from bottom
         while i >= 0:
             zeros = 0
@@ -74,6 +75,7 @@ class Board:
             # this row is full
             if zeros == 0:
                 lines += 1
+                cleared_indicies.append(i)
                 # Remove the full line by moving all rows above it down
                 for k in range(i, 1, -1):
                     for j in range(self.width):
@@ -86,7 +88,7 @@ class Board:
             else:
                 i -= 1  # Only move up if no line was cleared
 
-        return lines
+        return lines, cleared_indicies
 
     def clear_board(self):
         #TODO: Clear the board and it's un-needed attributes (states)

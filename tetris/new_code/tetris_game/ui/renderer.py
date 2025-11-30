@@ -65,6 +65,26 @@ class Renderer:
     """
         VFX
     """
+    # Delegates the vfx based on the pool that is sent here
+    def handle_vfx_pool(self, vfx_pool):
+        vfx_handlers = {
+            'line_clear': self.create_line_clear_particles,
+            'column_flame': self.create_column_flame_effect,
+            'screen_flash': self.trigger_screen_flash,
+        }
+        
+
+        for vfx_event in vfx_pool:
+            vfx_type = vfx_event.get('type')
+
+            if vfx_type in vfx_handlers:
+
+                # Call the correct handler
+                handler = vfx_handlers[vfx_type]
+
+                # Get params from the dict and apply to the 
+                params = {k: v for k, v in vfx_event.items() if k != 'type'}
+                handler(**params)
     
     def create_line_clear_particles(self, line_y, board_width):
         """Create particles when a line is cleared"""
