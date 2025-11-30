@@ -25,9 +25,15 @@ class AbstractState(ABC):
         pass
 
     @abstractmethod
+    def restart(self):
+        pass
+
+    @abstractmethod
     def update(self):
         pass
 
     @abstractmethod
     def draw(self):
         pass
+
+

@@ -82,7 +82,7 @@ class Game(AbstractState):
         self.renderer.render_board(self.gamemode.board)
         self.renderer.draw_piece(self.gamemode.piece)
         self.renderer.draw_score(self.gamemode.points)
-
+        self.renderer.draw_level(self.gamemode.display_level)
         self.renderer.draw_next_piece(self.gamemode.next_piece)
 
     def toggle_pause():

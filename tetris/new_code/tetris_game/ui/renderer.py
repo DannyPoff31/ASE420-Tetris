@@ -2,6 +2,9 @@
     Author: Nathaniel Brewer
 
     This is the area where the game is drawn and piece images are drawn
+
+    This def needs to be refactored. Truthfully at some point it just got to too much stuff
+    I decided against it. Sorry... 
 """
 import pygame # type: ignore (ignores the "could not resolve" error)
 
@@ -427,6 +430,19 @@ class Renderer:
 
     def render_pause(self, buttons):
         self._render_buttons(buttons)
+
+    def draw_level(self, level):
+        left_margin = 10
+        level_y = 10  # Top margin
+        
+        # Render "LEVEL" label
+        label_text = self.font.render('LEVEL', True, BLACK)
+        self.screen.blit(label_text, (left_margin, level_y))
+        
+        # Render the actual level value below the label
+        level_text = self.font.render(str(level), True, BLACK)
+        self.screen.blit(level_text, (left_margin, level_y + 35))
+
 
     def clear(self):
         self.screen.fill(WHITE)

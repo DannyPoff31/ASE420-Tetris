@@ -27,6 +27,9 @@ class Menu(AbstractState):
     def startup(self):
         self.drawn = False
 
+    def restart(self):
+        self.startup()
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

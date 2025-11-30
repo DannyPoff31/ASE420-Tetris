@@ -80,6 +80,9 @@ class Setting(AbstractState):
         if self.sound_enabled is None:
             self.sound_enabled = True
 
+    def restart(self):
+        self.startup()
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -149,7 +152,7 @@ class Setting(AbstractState):
         
         # Draw title
         font_large = pygame.font.Font(None, 48)
-        title_surface = font_large.render("Controls", True, (255, 255, 255))
+        title_surface = font_large.render("Controls", True, (0, 0, 0))
         title_rect = title_surface.get_rect(center=(self.config.window_width // 2, 30))
         self.renderer.screen.blit(title_surface, title_rect)
         
@@ -162,7 +165,7 @@ class Setting(AbstractState):
             rect = control_btn['rect']
             
             # Draw action name (left column)
-            action_surface = font.render(display_name + ":", True, (255, 255, 255))
+            action_surface = font.render(display_name + ":", True, (0, 0, 0))
             action_rect = action_surface.get_rect(right=rect.left - 10, centery=rect.centery)
             self.renderer.screen.blit(action_surface, action_rect)
             
@@ -185,7 +188,7 @@ class Setting(AbstractState):
         
         # Draw sound settings section
         sound_y = 370
-        sound_label = font.render("Enable Sound:", True, (255, 255, 255))
+        sound_label = font.render("Enable Sound:", True, (0, 0, 0))
         sound_label_rect = sound_label.get_rect(left=50, centery=sound_y + 12)
         self.renderer.screen.blit(sound_label, sound_label_rect)
         
@@ -194,7 +197,7 @@ class Setting(AbstractState):
         self.sound_checkbox_rect = checkbox_rect  # Update for click detection
         
         # Checkbox border
-        pygame.draw.rect(self.renderer.screen, (255, 255, 255), checkbox_rect, 2)
+        pygame.draw.rect(self.renderer.screen, (0, 0, 0), checkbox_rect, 2)
         
         # Checkbox fill if enabled
         if self.sound_enabled:

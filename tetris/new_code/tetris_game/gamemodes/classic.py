@@ -16,6 +16,9 @@ class Classic(AbstractGamemode):
         # Fast down
         self.pressing_down = False
 
+        # Track when piece last moved down to help with the level incrementation
+        self.last_move_counter = 0
+
         # Board instantiation
         self.board_height = 20
         self.board_width = 10
@@ -31,6 +34,13 @@ class Classic(AbstractGamemode):
 
     def _start_up(self):
         self.piece = None
+
+        # Reset lines to 0
+        self.total_lines_broken = 0
+
+        # Set game level to starting
+        self.config.level = 1
+        self.display_level = 1
 
         self.board = Board(self.board_height, self.board_width)
         self.blocks_placed = 0
@@ -55,13 +65,14 @@ class Classic(AbstractGamemode):
         should_move_down = False
         
         if pressing_down:
-            should_move_down = counter % 5 == 0  # Move every 5 frames when holding down
+            should_move_down = (self.config.counter - self.last_move_counter) >= 5   # Move every 5 frames when holding down
         else:
-            should_move_down = counter % (fps // 2) == 0  # Normal speed
+            should_move_down = (self.config.counter - self.last_move_counter) >= (self.config.fps // 2) # Normal speed
         
         if should_move_down:
             # Try to move piece down
             self.piece.yShift += 1
+            self.last_move_counter = self.config.counter
             
             if self.board.intersects(self.piece):
                 self.piece.yShift -= 1
@@ -112,6 +123,9 @@ class Classic(AbstractGamemode):
                     lines_broken, cleared_indices = result
                 else:
                     lines_broken = result
+                    
+                    self.total_lines_broken += lines_broken
+
                     cleared_indices = []
                     # Play click sound when block is placed (hard drop)
                     self.config.play_click_sound()
@@ -132,4 +146,9 @@ class Classic(AbstractGamemode):
             if self.board.intersects(self.piece):
                 return "gameover"
         
+        # Check level requirements (every 10 blocks broken level += 1)
+        if((self.total_lines_broken / self.config.level) // 10):
+            self.config.level += 0.25
+            self.display_level += 1
+
         return 'game'

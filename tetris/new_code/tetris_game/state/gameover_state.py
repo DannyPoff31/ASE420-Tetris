@@ -26,6 +26,9 @@ class GameOver(AbstractState):
     def startup(self):
         return 
 
+    def restart(self):
+        return
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

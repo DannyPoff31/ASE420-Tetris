@@ -87,6 +87,9 @@ class GamemodeSelection(AbstractState):
         for button in self.piece_selection_buttons:
             button["selected"] = False
 
+    def restart(self):
+        self.startup()
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -213,13 +216,13 @@ class GamemodeSelection(AbstractState):
         # Title
         font_large = pygame.font.SysFont('Comic Sans', 30, True, False)
         title = font_large.render("Select Special Pieces", True, (0, 0, 0))
-        title_rect = title.get_rect(center=(250, 40))
+        title_rect = title.get_rect(center=(200, 40))  # Centered on 400px wide screen
         self.renderer.screen.blit(title, title_rect)
         
         # Instructions
         font_small = pygame.font.SysFont('Comic Sans', 18, False, False)
         instruction = font_small.render("Click to toggle pieces", True, (100, 100, 100))
-        instruction_rect = instruction.get_rect(center=(250, 70))
+        instruction_rect = instruction.get_rect(center=(200, 70))  # Centered on 400px wide screen
         self.renderer.screen.blit(instruction, instruction_rect)
         
         # Draw piece selection buttons
@@ -265,9 +268,10 @@ class GamemodeSelection(AbstractState):
         text_rect = text.get_rect(center=self.back_button["rect"].center)
         self.renderer.screen.blit(text, text_rect)
         
-        # Show count of selected pieces
+        # Show count of selected pieces (centered)
         count_text = font_small.render(f"Selected: {len(self.selected_special_pieces)}", True, (0, 0, 0))
-        self.renderer.screen.blit(count_text, (350, 410))
+        count_rect = count_text.get_rect(center=(200, 365))  # Centered above buttons
+        self.renderer.screen.blit(count_text, count_rect)
     
     def get_gamemode_config(self):
         # Return the configuration for the selected gamemode
