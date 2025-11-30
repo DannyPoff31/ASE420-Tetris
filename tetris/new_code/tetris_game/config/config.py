@@ -5,11 +5,12 @@
     can be edited by the user to change settings and saved
 """
 
-
 import json
 import pygame # type: ignore (ignores the "could not resolve" error)
 import shutil
 import os
+
+from ..gamemodes.abstract_gamemode import AbstractGamemode
 
 class Config:
     def __init__(self):
@@ -28,15 +29,15 @@ class Config:
 
         self.counter = 0
 
-<<<<<<< Updated upstream
-=======
         self.load_sounds()
 
         self.play_sounds = self.get_sound_setting("play_sounds")
 
         # The amount the counter will increase. 
         self.level = 1
->>>>>>> Stashed changes
+
+        # Create default gamemode
+        self.pending_gamemode = None
 
     # On creation of the config object it wi
     def _check_for_config(self):

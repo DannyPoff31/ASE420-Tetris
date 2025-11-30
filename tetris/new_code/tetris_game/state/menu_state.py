@@ -8,14 +8,14 @@ from .abstract_state import AbstractState
 
 class Menu(AbstractState):
     def __init__(self, config, input, renderer):
-        super.__init__(self, config, input, renderer)
+        super().__init__(config, input, renderer)
         self.next = 'game'
 
         self.drawn = False
         
         # Menu buttons
         self.buttons = [
-            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
+            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "gamemode"},
             {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
             {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
         ]

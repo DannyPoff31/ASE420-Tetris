@@ -8,7 +8,7 @@ from .abstract_state import AbstractState
 
 class Pause(AbstractState):
     def __init__(self, config, input, renderer):
-        super.__init__(self, config, input, renderer)
+        super().__init__(config, input, renderer)
         self.next = 'pause'
 
         self.drawn = False

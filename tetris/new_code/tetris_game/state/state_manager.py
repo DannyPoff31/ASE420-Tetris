@@ -3,7 +3,6 @@ Author: Nathaniel Brewer
 Class to manage the states, their transitions, delegating updates etc.
 """
 
-from .abstract_state import AbstractState
 from .game_state import Game
 from .gameover_state import GameOver
 from .menu_state import Menu
@@ -50,9 +49,10 @@ class StateManager():
         # Change state
         self._change_state(result)
 
-        print(self.current_state_string)
+        # Check for game state
+
         
-        # Always return true
+        # Always return true to continue game
         return True
 
     def _change_state(self, new_state_string):

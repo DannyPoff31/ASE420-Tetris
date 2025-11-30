@@ -5,14 +5,11 @@
 """
 from abc import ABC, abstractmethod
 
-from ...main.constants import FIGURES
-
 class AbstractPiece(ABC):
     def __init__(self, x, y, piece_type=None, piece_color=None):
         self.xShift = x
         self.yShift = y
         self.rotation = 0   
-        self.figures = FIGURES
 
     @abstractmethod
     def go_side(self, newXShift, board):
@@ -27,7 +24,7 @@ class AbstractPiece(ABC):
         pass
 
     @abstractmethod
-    def insance_drop(self, board):
+    def instant_drop(self, board):
         pass
 
     @abstractmethod

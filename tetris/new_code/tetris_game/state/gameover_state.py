@@ -8,7 +8,7 @@ from .abstract_state import AbstractState
 
 class GameOver(AbstractState):
     def __init__(self, config, input, renderer):
-        super.__init__(self, config, input, renderer)
+        super().__init__(config, input, renderer)
         self.next = 'menu'
 
         self.drawn = False
@@ -20,8 +20,11 @@ class GameOver(AbstractState):
         ]
 
     def cleanup(self):
-        self.renderer.clear();
+        self.renderer.clear()
         self.drawn = False
+
+    def startup(self):
+        return 
 
     def update(self):
         for event in pygame.event.get():

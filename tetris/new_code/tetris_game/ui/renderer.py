@@ -6,6 +6,9 @@
 import pygame # type: ignore (ignores the "could not resolve" error)
 
 from ..main.constants import COLORS, BLACK, WHITE, GRAY
+import random
+import os
+import math
 
 # StartX/Y position in the screen
 xStart = 100
@@ -21,8 +24,6 @@ class Renderer:
         self.yStart = yStart
         self.block_pixel_size = block_pixel_size
         self.font = pygame.font.SysFont('Comic Sans', 25, True, False)
-<<<<<<< Updated upstream
-=======
 
         
         # Load block images
@@ -43,8 +44,8 @@ class Renderer:
         if os.path.exists(bomb_block_path):
             bomb_img = pygame.image.load(bomb_block_path)
             # Scale to 3x6 block size
-            special_width = block_pixel_size * SPECIAL_BLOCK_WIDTH - 2
-            special_height = block_pixel_size * SPECIAL_BLOCK_HEIGHT - 2
+            special_width = block_pixel_size * 3 - 2
+            special_height = block_pixel_size * 6 - 2
             self.special_block_image = pygame.transform.scale(bomb_img, (special_width, special_height))
         else:
             self.special_block_image = None
@@ -268,7 +269,6 @@ class Renderer:
                     (int(particle['x']), int(particle['y'])),
                     int(particle['size'] * fade)
                 )
->>>>>>> Stashed changes
 
     """
         Rendering

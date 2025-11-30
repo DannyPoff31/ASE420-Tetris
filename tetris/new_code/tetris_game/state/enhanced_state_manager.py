@@ -35,6 +35,6 @@ class EnhancedStateManager(StateManager):
         self.current_state = self.states[new_state_string]
 
         # Call startup for pause state specifically, or for any state when doing cleanup
-        if (new_state_string == 'pause') or (should_cleanup and hasattr(self.current_state, 'startup')):
-            if hasattr(self.current_state, 'startup'):
-                self.current_state.startup()
+        if (new_state_string == 'pause') or (should_cleanup and hasattr(self.current_state, 'restart')):
+            if hasattr(self.current_state, 'restart'):
+                self.current_state.restart()

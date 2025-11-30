@@ -5,7 +5,7 @@
 """
 
 import random
-from ...main.constants import COLORS, FIGURES
+from ...main.constants import COLORS
 
 from ..piece.abstract_piece import AbstractPiece
 
@@ -14,10 +14,19 @@ class Piece(AbstractPiece):
         self.xShift = x
         self.yShift = y
         self.rotation = 0   
-        self.figures = FIGURES
+        self.is_special = False
+        self.figures = {
+        'I' : [[1, 5, 9, 13], [4, 5, 6, 7]],  # I piece
+        'Z' : [[4, 5, 9, 10], [2, 6, 5, 9]],  # Z Piece
+        'S' : [[6, 7, 9, 10], [1, 5, 6, 10]], # S Piece
+        'L' : [[1, 2, 5, 9], [0, 4, 5, 6], [1, 5, 9, 8], [4, 5, 6, 10]],      # L Piece
+        'J' : [[1, 2, 6, 10], [5, 6, 7, 9], [2, 6, 10, 11], [3, 5, 6, 7]],    # J Piece   
+        'T' : [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],       # T Piece
+        'O' : [[1, 2, 5, 6]] # O (square) piece
+        }
 
         if piece_type is None:
-             self.type = random.randint(0, len(self.figures) - 1)
+            self.type = random.choice(list(self.figures.keys()))
         else:
             self.type = piece_type
 

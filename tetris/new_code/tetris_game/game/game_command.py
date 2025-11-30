@@ -5,7 +5,7 @@
     This is only for game commands that affect the pieces themselves
 """
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 class Command:
 
@@ -36,15 +36,11 @@ class RotateCommand(Command):
         self.piece = piece
         self.board = board
 
-<<<<<<< Updated upstream
-        #Store old rotation
-=======
         # Special blocks cannot rotate
         if piece.is_special:
             return False
 
         # Store old rotation
->>>>>>> Stashed changes
         old_rotation = piece.rotation
         if self.clockwise:
             piece.rotation = (piece.rotation + 1) % len(piece.figures[piece.type])
@@ -77,8 +73,8 @@ class HardDropCommand(Command):
 # Creates a command map based on the enum commands listed in piece_action.py
 class CommandFacotry:
     def __init__(self):
-        
-        from .piece_action import PieceAction
+
+        from .piece.piece_action import PieceAction
 
         self._command_map = {
             PieceAction.MOVE_LEFT: lambda: MoveCommand(-1),
