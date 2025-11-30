@@ -86,6 +86,18 @@ class Renderer:
                 params = {k: v for k, v in vfx_event.items() if k != 'type'}
                 handler(**params)
     
+    def update_vfx(self):
+        self.update_particles()
+        self.update_flame_particles()
+        self.update_column_flame_particles()
+        self.update_screen_flash()
+
+    def draw_vfx(self):
+        self.draw_particles()
+        self.draw_flame_particles()
+        self.draw_column_flame_particles()
+        self.draw_screen_flash()
+
     def create_line_clear_particles(self, line_y, board_width):
         """Create particles when a line is cleared"""
         # Calculate screen position of the cleared line
@@ -326,7 +338,36 @@ class Renderer:
                     )
 
     def draw_piece(self, piece):
+
+        # Special block render
+        if piece.is_special:
+            if self.special_block_image is not None:
+
+                self.screen.blit(
+                    self.special_block_image,
+                    (
+                        self.xStart + self.block_pixel_size * piece.xShift + 1,
+                        self.yStart + self.block_pixel_size * piece.yShift + 1
+                    )
+                )
+            else:
+                for i in range(piece.height):
+                    for j in range(piece.width):
+                        pygame.draw.rect(
+                            self.screen,
+                            (255, 0, 0),
+                            [
+                                self.xStart + self.block_pixel_size * (j + piece.xShift) + 1,
+                                self.yStart + self.block_pixel_size * (i + piece.yShift) + 1,
+                                self.block_pixel_size - 2,
+                                self.block_pixel_size - 2
+                            ]
+                        )
+            # Don't draw the collision blocks for special pieces
+            return
+
         figure = piece.get_figure()
+
         for i in range(4):
             for j in range(4):
                 p = i * 4 + j
@@ -380,6 +421,32 @@ class Renderer:
             ],
             2
         )
+        
+        # Special handling for special pieces
+        if next_piece.is_special:
+            if self.special_block_image is not None:
+                # Scale the rocket image to fit in the preview box
+                preview_width = int(preview_block_size * 3 * 0.75)  # 3 blocks wide, scaled down
+                preview_height = int(preview_block_size * 6 * 0.75)  # 6 blocks tall, scaled down
+                scaled_rocket = pygame.transform.scale(self.special_block_image, (preview_width, preview_height))
+                
+                # Center the rocket in the preview box
+                rocket_x = preview_x + (preview_box_size - preview_width) // 2
+                rocket_y = preview_y + 30 + (preview_box_size - preview_height) // 2
+                self.screen.blit(scaled_rocket, (rocket_x, rocket_y))
+            else:
+                # Fallback: draw red rectangle for special piece preview
+                special_width = int(preview_block_size * 3 * 0.75)
+                special_height = int(preview_block_size * 6 * 0.75)
+                special_x = preview_x + (preview_box_size - special_width) // 2
+                special_y = preview_y + 30 + (preview_box_size - special_height) // 2
+                
+                pygame.draw.rect(
+                    self.screen,
+                    (255, 0, 0),
+                    [special_x, special_y, special_width, special_height]
+                )
+            return
         
         figure = next_piece.get_figure()
         if not figure:

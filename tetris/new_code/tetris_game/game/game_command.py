@@ -71,7 +71,7 @@ class HardDropCommand(Command):
         return lines_broken  # Return the actual lines cleared, not just True
     
 # Creates a command map based on the enum commands listed in piece_action.py
-class CommandFacotry:
+class CommandFactory:
     def __init__(self):
 
         from .piece.piece_action import PieceAction

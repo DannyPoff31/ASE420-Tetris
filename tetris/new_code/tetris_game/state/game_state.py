@@ -11,10 +11,6 @@ from ..game.piece.piece_action import PieceAction
 
 class Game(AbstractState):
 
-    vfx_reg = [
-
-    ]
-
     def __init__(self, config, input, renderer):
         super().__init__(config, input, renderer)
         self.next = 'gameover'
@@ -33,7 +29,6 @@ class Game(AbstractState):
 
     def restart(self):
         # Force recreation of gamemode for restart
-        self.gamemode = None
         self.startup()
         if self.gamemode is not None:
             self.gamemode.restart()
@@ -43,16 +38,17 @@ class Game(AbstractState):
 
         self.drawn = False
 
+        # If there's a pending gamemode, use it (overrides existing gamemode)
+        if self.config.pending_gamemode is not None:
+            self.gamemode = self.config.pending_gamemode
+            # Clear pending_gamemode after using it
+            self.config.pending_gamemode = None
         # Only create a new gamemode if we don't have one yet
-        if self.gamemode is None:
-            # Use pending gamemode or create a default Classic mode
-            if self.config.pending_gamemode is not None:
-                self.gamemode = self.config.pending_gamemode
-            else:
-                # Create a default Classic gamemode if none was selected
-                from ..gamemodes.classic import Classic
-                default_config = {'mode': 'classic', 'special_pieces': [], 'include_classic': True}
-                self.gamemode = Classic(default_config, self.config)
+        elif self.gamemode is None:
+            # Create a default Classic gamemode if none was selected
+            from ..gamemodes.classic import Classic
+            default_config = {'mode': 'classic', 'special_pieces': [], 'include_classic': True}
+            self.gamemode = Classic(default_config, self.config)
 
         self.points = 0
 
@@ -91,8 +87,8 @@ class Game(AbstractState):
         self.renderer.draw_next_piece(self.gamemode.next_piece)
 
         self.renderer.handle_vfx_pool(self.gamemode.vfx_pool)
-        self.renderer.update_particles()
-        self.renderer.draw_particles()
+        self.renderer.update_vfx()
+        self.renderer.draw_vfx()
         self.gamemode.vfx_pool.clear()
 
     def toggle_pause():

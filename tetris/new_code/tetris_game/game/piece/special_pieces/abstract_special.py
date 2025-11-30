@@ -6,7 +6,7 @@ class AbstractSpecialPiece(AbstractPiece):
     def __init__(self, x, y, piece_type=None, piece_color=None):
         super().__init__(x, y, piece_type, piece_color)
 
-        self.is_sepcial = True
+        self.is_special = True
         
 
     @abstractmethod
@@ -27,4 +27,9 @@ class AbstractSpecialPiece(AbstractPiece):
 
     @abstractmethod
     def get_figure(self):
+        pass
+
+    # Handle the special ability 
+    @abstractmethod
+    def special_ability(self, board):
         pass

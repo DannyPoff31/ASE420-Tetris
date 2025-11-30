@@ -9,7 +9,7 @@ import pygame # type: ignore
 from .abstract_state import AbstractState
 
 from ..gamemodes.classic import Classic
-# from ..gamemode.special import Special
+from ..gamemodes.special_gamemode import Special
 
 class GamemodeSelection(AbstractState):
     def __init__(self, config, input, renderer):
@@ -59,6 +59,7 @@ class GamemodeSelection(AbstractState):
         start_x = (400 - grid_width) // 2  # Center the grid
         start_y = 100
         
+        # generate all available special pieces to this menu
         for i, piece_type in enumerate(self.available_special_pieces):
             row = i // 2
             col = i % 2
@@ -165,7 +166,7 @@ class GamemodeSelection(AbstractState):
         if self.confirm_button["rect"].collidepoint(mouse_pos):
             if len(self.selected_special_pieces) > 0:
                 gamemode = {'mode': 'special', 'special_pieces': self.selected_special_pieces, 'include_classic': True}
-                self.created_gamemode = Classic(gamemode, self.config)
+                self.created_gamemode = Special(gamemode, self.config)
                 self.config.pending_gamemode = self.created_gamemode
                 self.config.play_click_sound()
                 return "game"

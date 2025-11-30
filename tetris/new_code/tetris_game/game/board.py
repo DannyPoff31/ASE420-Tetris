@@ -20,7 +20,31 @@ class Board:
     def intersects(self, piece):
         intersection = False
 
-        # Check each block of the 4x4 piece grid
+        # Special handling for special pieces with custom dimensions
+        if piece.is_special and hasattr(piece, 'width') and hasattr(piece, 'height'):
+            # Check if any part of the special piece overlaps with the board or existing pieces
+            for i in range(piece.height):
+                for j in range(piece.width):
+                    board_y = piece.yShift + i
+                    board_x = piece.xShift + j
+                    
+                    # Check bounds
+                    if (board_y >= self.height or board_y < 0 or 
+                        board_x >= self.width or board_x < 0):
+                        intersection = True
+                        break
+                    
+                    # Check if there's already a piece at this position
+                    if board_y >= 0 and board_x >= 0 and self.field[board_y][board_x] > 0:
+                        intersection = True
+                        break
+                
+                if intersection:
+                    break
+            
+            return intersection
+
+        # Check each block of the 4x4 piece grid (for normal pieces)
         # I is the height(Y)
         for i in range(4):
             # J is the width(X)
@@ -89,7 +113,3 @@ class Board:
                 i -= 1  # Only move up if no line was cleared
 
         return lines, cleared_indicies
-
-    def clear_board(self):
-        #TODO: Clear the board and it's un-needed attributes (states)
-        return False

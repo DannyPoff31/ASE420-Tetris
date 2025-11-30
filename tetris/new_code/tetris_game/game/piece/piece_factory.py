@@ -53,4 +53,5 @@ class PieceFactory:
             return piece_class(x, y)
 
 
-        
+    def create_rocket(self, x, y):
+        return RocketPiece(x, y)

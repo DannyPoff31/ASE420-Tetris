@@ -1,16 +1,15 @@
 """
     Author: Nathaniel Brewer
 
-    Classic tetris gamemode logic
+    Special Block gamemode where special blocks you have chosen are allowed to be placed
 """
-
 from .abstract_gamemode import AbstractGamemode
 
 from ..game.board import Board
 
 from ..game.game_command import CommandFactory
 
-class Classic(AbstractGamemode):
+class Special(AbstractGamemode):
     def __init__(self, gamemode_config, config):
         super().__init__(gamemode_config, config)
 
@@ -33,7 +32,7 @@ class Classic(AbstractGamemode):
         # Default Starting position for pieces
         self.piece_start_xPos = (self.board_width - 4) // 2
         self.piece_start_yPos = 0
-        
+
         self._start_up()
 
     def restart(self):
@@ -42,7 +41,7 @@ class Classic(AbstractGamemode):
     def _start_up(self):
         self.piece = None
 
-        # Reset lines to 0
+         # Reset lines to 0
         self.total_lines_broken = 0
 
         # Set game level to starting
@@ -58,16 +57,29 @@ class Classic(AbstractGamemode):
 
     def _create_pieces(self):
         # new game will need a init piece to begin and then will create next piece
+            
         if self.piece == None:
             self.piece = self.piece_factory.create_random_piece(self.piece_start_xPos, self.piece_start_yPos)
+
+            # Prevent special pieces from being first
+
+            while self.piece.is_special:
+                self.piece = self.piece_factory.create_random_piece(self.piece_start_xPos, self.piece_start_yPos)
+
         else:
-            self.piece = self.next_piece 
+            self.piece = self.next_piece
+
         self.next_piece = self.piece_factory.create_random_piece(self.piece_start_xPos, self.piece_start_yPos)
-    
+
     def calculate_score(self, lines_cleared):
+        
+        # No points for special pieces
+        if(self.piece.is_special):
+            return
+
         self.points += self.SCORING[lines_cleared - 1]
 
-    def handle_downkey(self, pressing_down, counter, fps):
+    def handle_downkey(self, pressing_down, counter, fps): 
         # Handle automatic downward movement
         should_move_down = False
         
@@ -83,33 +95,44 @@ class Classic(AbstractGamemode):
             
             if self.board.intersects(self.piece):
                 self.piece.yShift -= 1
-                # Freeze and handle new piece creation
-                result = self.board.freeze_piece(self.piece)
-                
-                # Special Block 
 
-                lines_broken, cleared_indices = result
+                if self.piece.is_special:
+                    # Play click sound when special block lands
+                    self.config.play_click_sound()
+                    
+                    # Execute special ability (clears columns)
+                    self.piece.special_ability(self.board)
+                    
+                    # Create flame effects for the cleared columns
+                    for j in range(self.piece.width):
+                        col_x = self.piece.xShift + j
+                        if 0 <= col_x < self.board_width:
+                            self.vfx_pool.append({
+                                'type': 'column_flame',
+                                'column_x': col_x,
+                                'board_height': self.board_height
+                            })
+                    
+                    self.blocks_placed += 1
+                else:
+                    # Freeze and handle new piece creation
+                    result = self.board.freeze_piece(self.piece)
+                    lines_broken, cleared_indices = result
 
-                # Play click sound when block is placed
-                self.config.play_click_sound()
+                    # Play click sound when block is placed
+                    self.config.play_click_sound()
 
-                # Special block: create flame effect for cleared columns
-                #if self.piece.is_special and cleared_columns:
-                    #for col_x in cleared_columns:
-                        #self.renderer.create_column_flame_effect(col_x, self.board_height)
-                #else:
-                    # Normal block: create particles for each cleared line
-                                        # Create particles for each cleared line
-                for line_y in cleared_indices:
-                    self.vfx_pool.append({
-                        'type': 'line_clear',
-                        'line_y': line_y,
-                        'board_width': self.board_width
-                    })  
-                
-                if lines_broken > 0:
-                    self.calculate_score(lines_broken)
-                self.blocks_placed += 1
+                    # Create particles for each cleared line
+                    for line_y in cleared_indices:
+                        self.vfx_pool.append({
+                            'type': 'line_clear',
+                            'line_y': line_y,
+                            'board_width': self.board_width
+                        })  
+                    
+                    if lines_broken > 0:
+                        self.calculate_score(lines_broken)
+                    self.blocks_placed += 1
 
                 # Create new piece
                 self._create_pieces()
@@ -131,6 +154,24 @@ class Classic(AbstractGamemode):
             result = command.execute(self.piece, self.board)
             if result is not None and result is not False:
                 # Hard drop was executed - result is (lines_broken, cleared_indices)
+                if self.piece.is_special:
+                    # Special piece hard drop
+                    self.config.play_click_sound()
+                    
+                    # Create flame effects for the cleared columns
+                    for j in range(self.piece.width):
+                        col_x = self.piece.xShift + j
+                        if 0 <= col_x < self.board_width:
+                            self.vfx_pool.append({
+                                'type': 'column_flame',
+                                'column_x': col_x,
+                                'board_height': self.board_height
+                            })
+                    
+                    self.blocks_placed += 1
+                    need_new_piece = True
+                else:
+                    # Normal piece hard drop
                     lines_broken, cleared_indices = result
                     
                     self.total_lines_broken += lines_broken

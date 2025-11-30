@@ -3,7 +3,9 @@ from abc import ABC, abstractmethod
 from ..game.piece.piece_factory import PieceFactory
 
 class AbstractGamemode(ABC):
-    def __init__(self, gamemode_config):
+    def __init__(self, gamemode_config, config):
+
+        self.config = config
 
         self.piece_factory = PieceFactory(gamemode_config)
 
