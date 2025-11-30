@@ -23,13 +23,15 @@ class Classic(AbstractGamemode):
         # Default Starting position for pieces
         self.piece_start_xPos = (self.board_width - 4) // 2
         self.piece_start_yPos = 0
-
+        
         self._start_up()
 
     def restart(self):
         self._start_up()
 
     def _start_up(self):
+        self.piece = None
+
         self.board = Board(self.board_height, self.board_width)
         self.blocks_placed = 0
         self.points = 0
@@ -38,7 +40,11 @@ class Classic(AbstractGamemode):
         self._create_pieces()
 
     def _create_pieces(self):
-        self.piece = self.piece_factory.create_random_piece(self.piece_start_xPos, self.piece_start_yPos)
+        # new game will need a init piece to begin and then will create next piece
+        if self.piece == None:
+            self.piece = self.piece_factory.create_random_piece(self.piece_start_xPos, self.piece_start_yPos)
+        else:
+            self.piece = self.next_piece 
         self.next_piece = self.piece_factory.create_random_piece(self.piece_start_xPos, self.piece_start_yPos)
     
     def calculate_score(self, lines_cleared):

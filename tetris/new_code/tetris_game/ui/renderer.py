@@ -321,8 +321,8 @@ class Renderer:
     
     def draw_score(self, score):
         # Calculate position to the right of the board
-        score_x = self.xStart + (self.block_pixel_size * 9) + 30  # 10 = board width, 30 = padding
-        score_y = self.yStart + 20
+        score_x = self.xStart + (self.block_pixel_size * 10) + 20  # 10 = board width, 20 = padding
+        score_y = self.yStart
         
         # Render "SCORE" label
         label_text = self.font.render('SCORE', True, BLACK)
@@ -330,7 +330,85 @@ class Renderer:
         
         # Render the actual score value below the label
         score_text = self.font.render(str(score), True, BLACK)
-        self.screen.blit(score_text, (score_x, score_y + 35))
+        self.screen.blit(score_text, (score_x, score_y + 30))
+
+    def draw_next_piece(self, next_piece):
+        preview_block_size = int(self.block_pixel_size * 0.75)  # 75% of block size
+        preview_box_size = preview_block_size * 4 + 4
+        # Position next piece below the score
+        next_x = self.xStart + (self.block_pixel_size * 10) + 20  # Same x as score
+        preview_y = self.yStart + 90  # Below score (60 for label/value + 30 spacing)
+        
+        preview_x = next_x
+        
+        # NEXT text
+        label_text = self.font.render('NEXT', True, BLACK)
+        self.screen.blit(label_text, (next_x, preview_y))
+        
+        # Draw preview background
+        pygame.draw.rect(
+            self.screen,
+            GRAY,
+            [
+                preview_x,
+                preview_y + 30,
+                preview_box_size,
+                preview_box_size
+            ],
+            2
+        )
+        
+        figure = next_piece.get_figure()
+        if not figure:
+            return
+
+        min_j = 4
+        max_j = -1
+        min_i = 4
+        max_i = -1
+        
+        for i in range(4):
+            for j in range(4):
+                p = i * 4 + j
+                if p in figure:
+                    min_j = min(min_j, j)
+                    max_j = max(max_j, j)
+                    min_i = min(min_i, i)
+                    max_i = max(max_i, i)
+        
+        piece_width = max_j - min_j + 1
+        piece_height = max_i - min_i + 1
+        
+        offset_x = (4 - piece_width) // 2 - min_j
+        offset_y = (4 - piece_height) // 2 - min_i
+        
+        # next piece
+        for i in range(4):
+            for j in range(4):
+                p = i * 4 + j
+                if p in figure:
+                    block_x = preview_x + 2 + preview_block_size * (j + offset_x)
+                    block_y = preview_y + 32 + preview_block_size * (i + offset_y)
+                    color_index = next_piece.color
+                    if color_index in self.block_images and self.block_images[color_index] is not None:
+                        # Scale image for preview size
+                        preview_img = pygame.transform.scale(
+                            self.block_images[color_index],
+                            (preview_block_size - 2, preview_block_size - 2)
+                        )
+                        self.screen.blit(preview_img, (block_x, block_y))
+                    else:
+                        # Fallback to color
+                        pygame.draw.rect(
+                            self.screen,
+                            COLORS[color_index],
+                            [
+                                block_x,
+                                block_y,
+                                preview_block_size - 2,
+                                preview_block_size - 2
+                            ]
+                        )
 
     def _render_buttons(self, buttons):
         self.screen.fill(WHITE)

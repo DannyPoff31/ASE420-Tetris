@@ -29,6 +29,9 @@ class Pause(AbstractState):
         self.renderer.clear()
         self.drawn = False
 
+    def restart(self):
+        self.cleanup()
+
     def startup(self):
         self.drawn = False
 

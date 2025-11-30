@@ -28,17 +28,21 @@ class GamemodeSelection(AbstractState):
         self.available_special_pieces = ['rocket']
         self.selected_special_pieces = []
 
-        # Phase 1 buttons - Mode Selection
+        # Phase 1 buttons - Mode Selection (centered for 400px wide screen)
+        button_width = 200
+        button_x = (400 - button_width) // 2  # Center horizontally
         self.mode_buttons = [
-            {"label": "Classic Mode", "rect": pygame.Rect(150, 150, 200, 60), "action": "classic"},
-            {"label": "Special Mode", "rect": pygame.Rect(150, 230, 200, 60), "action": "special"},
-            {"label": "Back to Menu", "rect": pygame.Rect(150, 310, 200, 60), "action": "menu"}
+            {"label": "Classic Mode", "rect": pygame.Rect(button_x, 150, button_width, 60), "action": "classic"},
+            {"label": "Special Mode", "rect": pygame.Rect(button_x, 230, button_width, 60), "action": "special"},
+            {"label": "Back to Menu", "rect": pygame.Rect(button_x, 310, button_width, 60), "action": "menu"}
         ]
         
-        # Phase 2 buttons - Special Piece Selection
+        # Phase 2 buttons - Special Piece Selection (centered for 400px wide screen)
         self.piece_selection_buttons = []
-        self.confirm_button = {"label": "Confirm Selection", "rect": pygame.Rect(150, 400, 200, 50), "action": "confirm"}
-        self.back_button = {"label": "Back", "rect": pygame.Rect(150, 460, 200, 50), "action": "back"}
+        button_width = 200
+        button_x = (400 - button_width) // 2  # Center horizontally
+        self.confirm_button = {"label": "Confirm Selection", "rect": pygame.Rect(button_x, 400, button_width, 50), "action": "confirm"}
+        self.back_button = {"label": "Back", "rect": pygame.Rect(button_x, 460, button_width, 50), "action": "back"}
         
         # Gamemode creation
         self.created_gamemode = None
@@ -47,12 +51,13 @@ class GamemodeSelection(AbstractState):
         self._init_piece_selection_buttons()
 
     def _init_piece_selection_buttons(self):
-        # Initialize the special piece selection buttons in a grid
-        start_x = 100
-        start_y = 100
+        # Initialize the special piece selection buttons in a grid (centered for 400px wide screen)
         button_width = 120
         button_height = 80
         spacing = 20
+        grid_width = button_width * 2 + spacing  # 2 columns
+        start_x = (400 - grid_width) // 2  # Center the grid
+        start_y = 100
         
         for i, piece_type in enumerate(self.available_special_pieces):
             row = i // 2
@@ -187,7 +192,7 @@ class GamemodeSelection(AbstractState):
         # Title
         font_large = pygame.font.SysFont('Comic Sans', 35, True, False)
         title = font_large.render("Select Game Mode", True, (0, 0, 0))
-        title_rect = title.get_rect(center=(250, 80))
+        title_rect = title.get_rect(center=(200, 80))  # Centered on 400px wide screen
         self.renderer.screen.blit(title, title_rect)
         
         # Draw buttons

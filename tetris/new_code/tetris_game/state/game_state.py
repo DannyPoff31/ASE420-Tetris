@@ -19,31 +19,35 @@ class Game(AbstractState):
             PieceAction.QUIT: 'quit'
         }
 
+        self.gamemode = None
         self.startup()
 
     def cleanup(self):
-        # clear the screen
-        self.renderer.clear()
-
-        # Reset to pre-init values
-        self.startup()
+        # Don't clear or reset when pausing - we want to preserve the game state
+        pass
 
     def restart(self):
+        # Force recreation of gamemode for restart
+        self.gamemode = None
         self.startup()
-
-        self.gamemode.restart()
+        if self.gamemode is not None:
+            self.gamemode.restart()
 
     # Used to restart the game by reseting vars (e.g. if the player wants to replay after losing)
     def startup(self): 
 
-        # Use pending gamemode or create a default Classic mode
-        if self.config.pending_gamemode is not None:
-            self.gamemode = self.config.pending_gamemode
-        else:
-            # Create a default Classic gamemode if none was selected
-            from ..gamemodes.classic import Classic
-            default_config = {'mode': 'classic', 'special_pieces': [], 'include_classic': True}
-            self.gamemode = Classic(default_config, self.config)
+        self.drawn = False
+
+        # Only create a new gamemode if we don't have one yet
+        if self.gamemode is None:
+            # Use pending gamemode or create a default Classic mode
+            if self.config.pending_gamemode is not None:
+                self.gamemode = self.config.pending_gamemode
+            else:
+                # Create a default Classic gamemode if none was selected
+                from ..gamemodes.classic import Classic
+                default_config = {'mode': 'classic', 'special_pieces': [], 'include_classic': True}
+                self.gamemode = Classic(default_config, self.config)
 
         self.points = 0
 
@@ -78,6 +82,8 @@ class Game(AbstractState):
         self.renderer.render_board(self.gamemode.board)
         self.renderer.draw_piece(self.gamemode.piece)
         self.renderer.draw_score(self.gamemode.points)
+
+        self.renderer.draw_next_piece(self.gamemode.next_piece)
 
     def toggle_pause():
         return 'pause'
