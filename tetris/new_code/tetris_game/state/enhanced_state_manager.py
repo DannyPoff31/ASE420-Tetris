@@ -1,7 +1,7 @@
 """
-Author: Nathaniel Brewer
+    Author: Nathaniel Brewer
 
-Extension of State manager. This will help with the pause state and the settings state
+    Extension of State manager. This will help with the pause state and the settings state
 """
 from .state_manager import StateManager
 
@@ -13,6 +13,8 @@ class EnhancedStateManager(StateManager):
         self.preserver_states = {'game'}
 
         self.resume_state = {'pause'}
+
+        self.settings_state = {'settings'}
 
     def _change_state(self, new_state_string):
         should_cleanup = True
@@ -33,6 +35,6 @@ class EnhancedStateManager(StateManager):
         self.current_state = self.states[new_state_string]
 
         # Call startup for pause state specifically, or for any state when doing cleanup
-        if (new_state_string == 'pause') or (should_cleanup and hasattr(self.current_state, 'startup')):
-            if hasattr(self.current_state, 'startup'):
-                self.current_state.startup()
+        if (new_state_string == 'pause') or (should_cleanup and hasattr(self.current_state, 'restart')):
+            if hasattr(self.current_state, 'restart'):
+                self.current_state.restart()

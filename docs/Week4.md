@@ -27,10 +27,13 @@ style: |
 # ASE 420 Tetris - Week 2 Progress
 
 ---
-## Progress
 
-- Features: 0 / 7 
-- Requirements: 1 / 8 (12.5%)
-- LoC: 0
+- Features: 1 / 7 (14%)
+- Requirements: 3 / 8 (37.5%)
+- LoC: 568
 
-Busy, worked on Refactoring
+Bug fixes
+Code rework
+
+
+

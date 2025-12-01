@@ -15,18 +15,3 @@ COLORS = (
     (180, 34, 22),      # Red
     (180, 34, 122),     # Magenta
 )
-
-# Tetris piece figures
-FIGURES = (
-    [[1, 5, 9, 13], [4, 5, 6, 7]],  # I piece
-    [[4, 5, 9, 10], [2, 6, 5, 9]],  # Z Piece
-    [[6, 7, 9, 10], [1, 5, 6, 10]], # S Piece
-    [[1, 2, 5, 9], [0, 4, 5, 6], [1, 5, 9, 8], [4, 5, 6, 10]],      # L Piece
-    [[1, 2, 6, 10], [5, 6, 7, 9], [2, 6, 10, 11], [3, 5, 6, 7]],    # J Piece   
-    [[1, 4, 5, 6], [1, 4, 5, 9], [4, 5, 6, 9], [1, 5, 6, 9]],       # T Piece
-    [[1, 2, 5, 6]], # O (square) piece
-)
-
-SPECIAL_BLOCK_WIDTH = 3
-SPECIAL_BLOCK_HEIGHT = 6
-SPECIAL_BLOCK_INTERVAL = 15  # Every 15 blocks, spawn special block

@@ -4,6 +4,9 @@
     "window_height": 500,
     "fps": 25
   },
+  "audio": {
+    "play_sounds": true
+  },
   "controls": {
     "move_left": 1073741904,
     "move_right": 1073741903,
