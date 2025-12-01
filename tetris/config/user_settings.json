@@ -5,7 +5,7 @@
     "fps": 25
   },
   "sound": {
-    "play_sounds": false
+    "play_sounds": true
   },
   "controls": {
     "move_left": 97,
