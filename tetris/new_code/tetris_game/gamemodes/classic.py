@@ -90,8 +90,8 @@ class Classic(AbstractGamemode):
 
                 lines_broken, cleared_indices = result
 
-                # Play click sound when block is placed
-                self.config.play_click_sound()
+                # Play block sound when normal block is placed
+                self.config.play_block_sound()
 
                 # Special block: create flame effect for cleared columns
                 #if self.piece.is_special and cleared_columns:
@@ -135,8 +135,8 @@ class Classic(AbstractGamemode):
                     
                     self.total_lines_broken += lines_broken
 
-                    # Play click sound when block is placed (hard drop)
-                    self.config.play_click_sound()
+                    # Play block sound when normal block is placed (hard drop)
+                    self.config.play_block_sound()
                     
                     # Create particles for each cleared line
                     for line_y in cleared_indices:

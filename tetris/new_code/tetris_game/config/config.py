@@ -18,6 +18,7 @@ class Config:
         self.default_config_file = "config/default_settings.json"
         self.user_config_file = "config/user_settings.json"
         self.sound_dir = "assets/sound"
+        self.img_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'img')
 
         self._check_for_config()
         self._load_user_settings()
@@ -31,7 +32,10 @@ class Config:
 
         self.load_sounds()
 
+        # Get sound setting, default to True if not set
         self.play_sounds = self.get_sound_setting("play_sounds")
+        if self.play_sounds is None:
+            self.play_sounds = True
 
         # The amount the counter will increase. 
         self.level = 1
@@ -113,13 +117,32 @@ class Config:
     """
 
     def load_sounds(self):
+        pygame.mixer.init()
+        
         # Load click sound
         click_sound_path = os.path.join(self.sound_dir, 'clickSound.wav')
         if os.path.exists(click_sound_path):
-            pygame.mixer.init()
             self.click_sound = pygame.mixer.Sound(click_sound_path)
         else:
             self.click_sound = None
+        
+        bgm_path = os.path.join(self.img_dir, 'bgm.mp3')
+        if os.path.exists(bgm_path):
+            pygame.mixer.music.load(bgm_path)
+            self.bgm_loaded = True
+        else:
+            self.bgm_loaded = False
+        block_sound_path = os.path.join(self.img_dir, 'blockSound.wav')
+        if os.path.exists(block_sound_path):
+            self.block_sound = pygame.mixer.Sound(block_sound_path)
+        else:
+            self.block_sound = None
+        
+        bomb_sound_path = os.path.join(self.img_dir, 'bombSound.mp3')
+        if os.path.exists(bomb_sound_path):
+            self.bomb_sound = pygame.mixer.Sound(bomb_sound_path)
+        else:
+            self.bomb_sound = None
 
     def get_sound_setting(self, setting):
         return self.settings.get('sound', {}).get(setting)
@@ -132,7 +155,15 @@ class Config:
         
         # Update the play_sounds variable immediately
         if setting == 'play_sounds':
+            old_value = self.play_sounds
             self.play_sounds = value
+            
+            if old_value != value:
+                if value:
+                    if self.bgm_loaded:
+                        pygame.mixer.music.play(-1)
+                else:
+                    pygame.mixer.music.stop()
         
         # Write to file
         with open(self.user_config_file, 'w') as file:
@@ -140,6 +171,23 @@ class Config:
 
     def play_click_sound(self):
         # Play the click sound effect
-        if self.click_sound is not None and self.play_sounds is True:
+        if self.click_sound is not None and self.play_sounds:
             self.click_sound.play()
+    
+    def play_bgm(self):
+        # Play background music in loop
+        if self.bgm_loaded and self.play_sounds:
+            pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+    
+    def stop_bgm(self):
+        # Stop background music
+        pygame.mixer.music.stop()
+    
+    def play_block_sound(self):
+        if self.block_sound is not None and self.play_sounds:
+            self.block_sound.play()
+    
+    def play_bomb_sound(self):
+        if self.bomb_sound is not None and self.play_sounds:
+            self.bomb_sound.play()
     

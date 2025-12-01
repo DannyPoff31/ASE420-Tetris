@@ -97,8 +97,8 @@ class Special(AbstractGamemode):
                 self.piece.yShift -= 1
 
                 if self.piece.is_special:
-                    # Play click sound when special block lands
-                    self.config.play_click_sound()
+                    # Play bomb sound when rocket block touches blocks
+                    self.config.play_bomb_sound()
                     
                     # Execute special ability (clears columns)
                     self.piece.special_ability(self.board)
@@ -119,8 +119,8 @@ class Special(AbstractGamemode):
                     result = self.board.freeze_piece(self.piece)
                     lines_broken, cleared_indices = result
 
-                    # Play click sound when block is placed
-                    self.config.play_click_sound()
+                    # Play block sound when normal block is placed
+                    self.config.play_block_sound()
 
                     # Create particles for each cleared line
                     for line_y in cleared_indices:
@@ -155,8 +155,8 @@ class Special(AbstractGamemode):
             if result is not None and result is not False:
                 # Hard drop was executed - result is (lines_broken, cleared_indices)
                 if self.piece.is_special:
-                    # Special piece hard drop
-                    self.config.play_click_sound()
+                    # Special piece hard drop - play bomb sound when rocket block touches blocks
+                    self.config.play_bomb_sound()
                     
                     # Create flame effects for the cleared columns
                     for j in range(self.piece.width):
@@ -176,8 +176,8 @@ class Special(AbstractGamemode):
                     
                     self.total_lines_broken += lines_broken
 
-                    # Play click sound when block is placed (hard drop)
-                    self.config.play_click_sound()
+                    # Play block sound when normal block is placed (hard drop)
+                    self.config.play_block_sound()
                     
                     # Create particles for each cleared line
                     for line_y in cleared_indices:

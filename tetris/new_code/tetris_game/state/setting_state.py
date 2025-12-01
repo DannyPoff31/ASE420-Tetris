@@ -104,6 +104,7 @@ class Setting(AbstractState):
                 # Check sound checkbox
                 if self.sound_checkbox_rect.collidepoint(mouse_pos):
                     self.sound_enabled = not self.sound_enabled
+                    self.config.set_sound_setting('play_sounds', self.sound_enabled)
                     self.drawn = False  # Redraw to show new state
                     self.config.play_click_sound()
                     continue
