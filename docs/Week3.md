@@ -29,8 +29,22 @@ style: |
 ---
 ## Progress
 
-- Features: 0 / 7 
-- Requirements: 1 / 8 (12.5%)
-- LoC: 0
+- Features: 1 / 7 (14%)
+- Requirements: 2 / 8 (25%)
+- LoC: 255
 
-Busy, worked on Refactoring
+Features: 
+- Score multiplier 
+- added settings config file
+  
+Requirements: 
+- score rework
+
+---
+
+### Working On
+
+- Main-menu / Game-over Screen
+- Refactoring input handling to command factory
+
+

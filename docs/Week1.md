@@ -29,8 +29,18 @@ style: |
 ---
 ## Progress
 
-- Features: 0 / 7 
+- Features: 0 / 7
 - Requirements: 1 / 8 (12.5%)
-- LoC: 0
+- LoC: 375
 
-Busy, worked on Refactoring
+Completed separation of concerns
+ - made 5 files for the game
+
+---
+
+### Working On
+
+
+- score multiplier
+
+
