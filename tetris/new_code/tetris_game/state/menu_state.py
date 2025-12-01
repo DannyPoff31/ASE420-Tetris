@@ -1,22 +1,21 @@
+"""
+    Author: Nathaniel Brewer
+
+    Menu state, child of abstract_state. Handles all things to do on the menu and returns the desired location to the state_manager
+"""
 import pygame # type: ignore
-import sys
-from .abstract_state import States
+from .abstract_state import AbstractState
 
-class Menu(States):
+class Menu(AbstractState):
     def __init__(self, config, input, renderer):
-        States.__init__(self, config, input, renderer)
+        super().__init__(config, input, renderer)
         self.next = 'game'
-
-        # Injected dependencies
-        self.config = config
-        self.input = input
-        self.renderer = renderer
 
         self.drawn = False
         
         # Menu buttons
         self.buttons = [
-            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "game"},
+            {"label": "Start Game", "rect": pygame.Rect(100, 100, 200, 50), "action": "gamemode"},
             {"label": "Settings", "rect": pygame.Rect(100, 170, 200, 50), "action": "settings"},
             {"label": "Quit", "rect": pygame.Rect(100, 240, 200, 50), "action": "quit"}
         ]
@@ -28,6 +27,9 @@ class Menu(States):
     def startup(self):
         self.drawn = False
 
+    def restart(self):
+        self.startup()
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -37,7 +39,7 @@ class Menu(States):
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
                         # Play click sound when button is clicked
-                        self.renderer.play_click_sound()
+                        self.config.play_click_sound()
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once

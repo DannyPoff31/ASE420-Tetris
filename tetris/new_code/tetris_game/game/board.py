@@ -1,8 +1,8 @@
 """
-Author: Nathaniel Brewer
+    Author: Nathaniel Brewer
+
+    All board management is handled here, and will save the current state of the board
 """
-import pygame # type: ignore
-from ..main.constants import BLACK, WHITE, GRAY, SPECIAL_BLOCK_WIDTH, SPECIAL_BLOCK_HEIGHT
 
 # This initalizes the board - will be called everytime the game starts
 class Board:
@@ -20,30 +20,31 @@ class Board:
     def intersects(self, piece):
         intersection = False
 
-        # Special block handling
-        if piece.is_special:
-            # Check if special block
-            for i in range(SPECIAL_BLOCK_HEIGHT):
-                for j in range(SPECIAL_BLOCK_WIDTH):
-                    board_y = i + piece.yShift
-                    board_x = j + piece.xShift
-
+        # Special handling for special pieces with custom dimensions
+        if piece.is_special and hasattr(piece, 'width') and hasattr(piece, 'height'):
+            # Check if any part of the special piece overlaps with the board or existing pieces
+            for i in range(piece.height):
+                for j in range(piece.width):
+                    board_y = piece.yShift + i
+                    board_x = piece.xShift + j
+                    
+                    # Check bounds
                     if (board_y >= self.height or board_y < 0 or 
                         board_x >= self.width or board_x < 0):
                         intersection = True
                         break
                     
-                    if board_y >= 0 and board_x >= 0 and board_y < self.height and board_x < self.width:
-                        if self.field[board_y][board_x] > 0:
-                            intersection = True
-                            break
+                    # Check if there's already a piece at this position
+                    if board_y >= 0 and board_x >= 0 and self.field[board_y][board_x] > 0:
+                        intersection = True
+                        break
                 
                 if intersection:
                     break
+            
             return intersection
 
-        # Normal block
-        # Check each block of the 4x4 piece grid
+        # Check each block of the 4x4 piece grid (for normal pieces)
         # I is the height(Y)
         for i in range(4):
             # J is the width(X)
@@ -71,19 +72,6 @@ class Board:
     
     # This will stop the piece from moving (called after it intersects with another piece)
     def freeze_piece(self, piece):
-
-        if piece.is_special:
-            for i in range(SPECIAL_BLOCK_HEIGHT):
-                for j in range(SPECIAL_BLOCK_WIDTH):
-                    board_y = i + piece.yShift
-                    board_x = j + piece.xShift
-                    
-                    if (0 <= board_y < self.height and 0 <= board_x < self.width):
-                        self.field[board_y][board_x] = -1  # Special marker
-            
-            cleared_columns = self.process_special_block(piece.xShift, piece.yShift)
-
-            return 0, [], cleared_columns
         
         for i in range(4):
             for j in range(4):
@@ -98,32 +86,9 @@ class Board:
         
         return broken_lines, cleared_indices
     
-    def process_special_block(self, start_x, start_y):
-        """Process special block: fall down vertically and clear blocks in 3 columns"""
-        for i in range(SPECIAL_BLOCK_HEIGHT):
-            for j in range(SPECIAL_BLOCK_WIDTH):
-                board_y = start_y + i
-                board_x = start_x + j
-                if (0 <= board_y < self.height and 0 <= board_x < self.width):
-                    if self.field[board_y][board_x] == -1:
-                        self.field[board_y][board_x] = 0
-        
-        # Special block falls down and clearing all blocks in 3 lines
-        # Clear all blocks in the 3 columns from top to bottom (entire columns)
-        cleared_columns = []
-        for j in range(SPECIAL_BLOCK_WIDTH):
-            col_x = start_x + j
-            if 0 <= col_x < self.width:
-                cleared_columns.append(col_x)
-                for i in range(self.height):
-                    if self.field[i][col_x] > 0:
-                        self.field[i][col_x] = 0
-        
-        return cleared_columns
-    
     def break_lines(self):
         lines = 0
-        cleared_line_indices = []  # Store which lines were cleared
+        cleared_indicies = [] # Which lines where broken
         i = self.height - 1  # Start from bottom
         while i >= 0:
             zeros = 0
@@ -134,7 +99,7 @@ class Board:
             # this row is full
             if zeros == 0:
                 lines += 1
-                cleared_line_indices.append(i)  # Record which line was cleared
+                cleared_indicies.append(i)
                 # Remove the full line by moving all rows above it down
                 for k in range(i, 1, -1):
                     for j in range(self.width):
@@ -147,8 +112,4 @@ class Board:
             else:
                 i -= 1  # Only move up if no line was cleared
 
-        return lines, cleared_line_indices
-
-    def clear_board(self):
-        #TODO: Clear the board and it's un-needed attributes (states)
-        return False
+        return lines, cleared_indicies

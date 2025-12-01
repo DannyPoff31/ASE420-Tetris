@@ -1,17 +1,15 @@
+"""
+    Author: Nathaniel Brewer
+
+    Gameover state child of abstract_state, appears when the player loses
+"""
 import pygame # type: ignore (ignores the "could not resolve" error)
-import sys
-from .abstract_state import States
+from .abstract_state import AbstractState
 
-
-class GameOver(States):
+class GameOver(AbstractState):
     def __init__(self, config, input, renderer):
-        States.__init__(self, config, input, renderer)
+        super().__init__(config, input, renderer)
         self.next = 'menu'
-
-        # Injected Dependencies
-        self.config = config
-        self.input = input
-        self.renderer = renderer
 
         self.drawn = False
 
@@ -22,8 +20,14 @@ class GameOver(States):
         ]
 
     def cleanup(self):
-        self.renderer.clear();
+        self.renderer.clear()
         self.drawn = False
+
+    def startup(self):
+        return 
+
+    def restart(self):
+        return
 
     def update(self):
         for event in pygame.event.get():
@@ -34,7 +38,7 @@ class GameOver(States):
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
                         # Play click sound when button is clicked
-                        self.renderer.play_click_sound()
+                        self.config.play_click_sound()
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once

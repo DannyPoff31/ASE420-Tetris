@@ -1,35 +1,36 @@
 """
-Author: Nathaniel Brewer
+    Author: Nathaniel Brewer
 
-
+    Pause state, child of abstract_state, handled by the enhanced_game_state to maintain the current game state.
 """
 import pygame# type: ignore (ignores the "could not resolve" error)
+from .abstract_state import AbstractState
 
-from .abstract_state import States
-
-class Pause(States):
+class Pause(AbstractState):
     def __init__(self, config, input, renderer):
-        States.__init__(self, config, input, renderer)
+        super().__init__(config, input, renderer)
         self.next = 'pause'
-
-        # Injected Dependencies
-        self.config = config
-        self.input = input
-        self.renderer = renderer
 
         self.drawn = False
 
-        # Game over buttons
+        # Pause menu buttons - centered with spacing
+        button_width = 200
+        button_height = 50
+        button_spacing = 10
+        center_x = self.config.window_width // 2
+        
         self.buttons = [
-            {"label": "Resume", "rect": pygame.Rect(100, 80, 200, 50), "action": "game"},
-            {"label": "Restart", "rect": pygame.Rect(100, 150, 200, 50), "action": "restart"},
-            {"label": "Settings", "rect": pygame.Rect(100, 220, 200, 50), "action": "settings"},
-            {"label": "Return to Menu", "rect": pygame.Rect(100, 290, 200, 50), "action": "menu"},
+            {"label": "Resume", "rect": pygame.Rect(center_x - button_width // 2, 120, button_width, button_height), "action": "game"},
+            {"label": "Restart", "rect": pygame.Rect(center_x - button_width // 2, 120 + button_height + button_spacing, button_width, button_height), "action": "restart"},
+            {"label": "Return to Menu", "rect": pygame.Rect(center_x - button_width // 2, 120 + (button_height + button_spacing) * 2, button_width, button_height), "action": "menu"},
         ]
 
     def cleanup(self):
-        self.renderer.clear();
+        self.renderer.clear()
         self.drawn = False
+
+    def restart(self):
+        self.cleanup()
 
     def startup(self):
         self.drawn = False
@@ -43,7 +44,7 @@ class Pause(States):
                 for button in self.buttons:
                     if button["rect"].collidepoint(mouse_pos):
                         # Play click sound when button is clicked
-                        self.renderer.play_click_sound()
+                        self.config.play_click_sound()
                         return button["action"]
         if(not self.drawn):
             # Only need to draw button states once

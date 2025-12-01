@@ -3,12 +3,12 @@ Author: Nathaniel Brewer
 Class to manage the states, their transitions, delegating updates etc.
 """
 
-from .abstract_state import States
 from .game_state import Game
 from .gameover_state import GameOver
 from .menu_state import Menu
 from .setting_state import Setting
 from .pause_state import Pause
+from .gamemode_select_state import GamemodeSelection
 
 class StateManager():
     def __init__(self, config, input, renderer):
@@ -19,14 +19,18 @@ class StateManager():
         self.input = input
         self.renderer = renderer
 
+        # Create game instance once and reuse it
+        game_instance = Game(config=self.config, input=self.input, renderer=self.renderer)
+
         # All available states will be labeled as a map
         self.states = {
             'pause': Pause(config=self.config, input=self.input, renderer=self.renderer),
-            'game': Game(config=self.config, input=self.input, renderer=self.renderer),
+            'game': game_instance,
+            'gamemode': GamemodeSelection(config=self.config, input=self.input,renderer=self.renderer),
             'gameover': GameOver(config=self.config, input=self.input, renderer=self.renderer),
             'menu': Menu(config=self.config, input=self.input, renderer=self.renderer),
             'settings': Setting(config=self.config, input=self.input, renderer=self.renderer),
-            'restart': Game(config=self.config, input=self.input, renderer=self.renderer)
+            'restart': game_instance  # Use the same instance for restart
         }
 
         self.current_state = self.states[self.current_state_string]
@@ -48,18 +52,26 @@ class StateManager():
         # Change state
         self._change_state(result)
 
-        print(self.current_state_string)
+        # Check for game state
+
         
-        # Always return true
+        # Always return true to continue game
         return True
 
     def _change_state(self, new_state_string):
+        # Handle restart specially
+        if new_state_string == 'restart':
+            # Reset the game state
+            self.states['game'].restart()
+            new_state_string = 'game'
+        
         # Change string
         self.current_state_string = new_state_string
 
-        # Reset to pre-init state
+        # Reset to pre-init state (cleanup old state)
         self.current_state.cleanup()
 
         # Change state
         self.current_state = self.states[new_state_string]
+        
 
