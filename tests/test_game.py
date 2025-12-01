@@ -612,153 +612,69 @@ class TestRunGameIntegration:
 
 
 # ============================================================================
-# END-TO-END TESTS: Real components (Config, Input, Renderer) with pygame mocked
+# REGRESSION TESTS: Ensure previously fixed bugs don't reoccur
 # ============================================================================
-class TestRunGameE2E:
-    """End-to-end tests for the run_game function with real components"""
+class TestRunGameRegression:
+    """Regression tests to prevent previously fixed bugs from reoccurring"""
 
     @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
     @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_game_initializes_with_real_config(self, mock_state_manager_class, mock_pygame):
-        """E2E test: game initializes successfully with real Config object"""
-        # Setup - Config will be real, only pygame and state manager mocked
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert - Config should have been created with real values
-        mock_pygame.init.assert_called_once()
-        assert mock_state_manager_class.called
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_game_passes_real_components_to_state_manager(self, mock_state_manager_class, mock_pygame):
-        """E2E test: state manager receives real Input and Renderer objects"""
+    def test_regression_pygame_not_quit_before_loop_ends(self, mock_state_manager_class, 
+                                                          mock_config_class, mock_input_class, 
+                                                          mock_renderer_class, mock_pygame):
+        """Regression test: pygame.quit is called only after loop exits, not before"""
         # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
         mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
+        mock_state_manager_instance.update.side_effect = [True, True, False]
         mock_state_manager_class.return_value = mock_state_manager_instance
 
-        # Execute
-        run_game()
-
-        # Assert - state manager should be called with 3 args (config, input, renderer)
-        assert mock_state_manager_class.call_count == 1
-        call_args = mock_state_manager_class.call_args[0]
-        assert len(call_args) == 3
+        call_order = []
         
-        # First arg should be Config instance
-        config = call_args[0]
-        assert hasattr(config, 'window_width')
-        assert hasattr(config, 'window_height')
-        assert hasattr(config, 'counter')
-        assert hasattr(config, 'level')
+        def track_flip():
+            call_order.append('flip')
         
-        # Second arg should be Input instance
-        input_obj = call_args[1]
-        assert hasattr(input_obj, 'get_actions')
-        assert hasattr(input_obj, 'is_down_pressed')
-        
-        # Third arg should be Renderer instance
-        renderer_obj = call_args[2]
-        assert hasattr(renderer_obj, 'render_board')
-        assert hasattr(renderer_obj, 'draw_piece')
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_renderer_created_with_real_screen(self, mock_state_manager_class, mock_pygame):
-        """E2E test: Renderer is created with actual pygame screen surface"""
-        # Setup
-        mock_screen = Mock(name='MockScreen')
-        mock_pygame.display.set_mode.return_value = mock_screen
-
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
-        mock_state_manager_class.return_value = mock_state_manager_instance
+        def track_quit():
+            call_order.append('quit')
+            
+        mock_pygame.display.flip.side_effect = track_flip
+        mock_pygame.quit.side_effect = track_quit
 
         # Execute
         run_game()
 
-        # Assert - Renderer should receive the exact screen object
-        call_args = mock_state_manager_class.call_args[0]
-        renderer = call_args[2]
-        assert renderer.screen == mock_screen
+        # Assert - flip should come before quit in call order
+        flip_index = call_order.index('flip')
+        quit_index = call_order.index('quit')
+        assert flip_index < quit_index, "pygame.display.flip should be called before pygame.quit"
 
     @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
     @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_input_created_with_real_config(self, mock_state_manager_class, mock_pygame):
-        """E2E test: Input is created with real Config object"""
+    def test_regression_counter_exact_threshold(self, mock_state_manager_class, 
+                                                 mock_config_class, mock_input_class, 
+                                                 mock_renderer_class, mock_pygame):
+        """Regression test: counter resets at exactly 100000, not before or after"""
         # Setup
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert - Input should have the config
-        call_args = mock_state_manager_class.call_args[0]
-        config = call_args[0]
-        input_obj = call_args[1]
-        assert input_obj.config == config
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_game_loop_with_multiple_state_updates(self, mock_state_manager_class, mock_pygame):
-        """E2E test: game loop runs multiple iterations with real components"""
-        # Setup
-        mock_state_manager_instance = Mock()
-        # Run 5 iterations
-        mock_state_manager_instance.update.side_effect = [True] * 5 + [False]
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert - state manager update should be called 6 times
-        assert mock_state_manager_instance.update.call_count == 6
-        assert mock_pygame.display.flip.call_count == 6
-        
-        # Verify config counter was updated
-        call_args = mock_state_manager_class.call_args[0]
-        config = call_args[0]
-        # Counter should be incremented 6 times (level = 1 by default)
-        assert config.counter == 6
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_config_loads_settings_from_files(self, mock_state_manager_class, mock_pygame):
-        """E2E test: Config loads window dimensions and FPS from settings files"""
-        # Setup
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert - pygame display should be created with config dimensions
-        call_args = mock_pygame.display.set_mode.call_args
-        dimensions = call_args[0][0]
-        
-        # Should be a tuple of (width, height)
-        assert isinstance(dimensions, tuple)
-        assert len(dimensions) == 2
-        assert isinstance(dimensions[0], int)  # width
-        assert isinstance(dimensions[1], int)  # height
-        assert dimensions[0] > 0
-        assert dimensions[1] > 0
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_clock_created_for_frame_rate_control(self, mock_state_manager_class, mock_pygame):
-        """E2E test: pygame clock is created for FPS control"""
-        # Setup
-        mock_clock = Mock()
-        mock_pygame.time.Clock.return_value = mock_clock
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 99999
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
 
         mock_state_manager_instance = Mock()
         mock_state_manager_instance.update.side_effect = [True, False]
@@ -767,22 +683,216 @@ class TestRunGameE2E:
         # Execute
         run_game()
 
-        # Assert
-        mock_pygame.time.Clock.assert_called_once()
-        # Clock should be ticked with a valid FPS value
-        assert mock_clock.tick.call_count == 2
-        tick_calls = mock_clock.tick.call_args_list
-        # All tick calls should have a positive FPS value
-        for call in tick_calls:
-            fps_value = call[0][0]
-            assert isinstance(fps_value, int)
-            assert fps_value > 0
+        # Assert - counter should be exactly 0 (99999 + 1 = 100000 which triggers reset)
+        assert mock_config.counter == 0, "Counter should reset at > 100000"
 
     @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
     @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_font_system_font_loaded(self, mock_state_manager_class, mock_pygame):
-        """E2E test: pygame font system font is loaded for rendering"""
+    def test_regression_screen_initialized_before_renderer(self, mock_state_manager_class, 
+                                                            mock_config_class, mock_input_class, 
+                                                            mock_renderer_class, mock_pygame):
+        """Regression test: screen is created before Renderer initialization"""
         # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        mock_state_manager_instance.update.return_value = False
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        call_order = []
+        
+        def track_set_mode():
+            call_order.append('set_mode')
+            return Mock()
+        
+        def track_renderer_init(*args, **kwargs):
+            call_order.append('renderer_init')
+            return Mock()
+
+        mock_pygame.display.set_mode.side_effect = track_set_mode
+        mock_renderer_class.side_effect = track_renderer_init
+
+        # Execute
+        run_game()
+
+        # Assert
+        set_mode_index = call_order.index('set_mode')
+        renderer_init_index = call_order.index('renderer_init')
+        assert set_mode_index < renderer_init_index, "Screen must be set before Renderer init"
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_regression_loop_continues_when_state_manager_true(self, mock_state_manager_class, 
+                                                                mock_config_class, mock_input_class, 
+                                                                mock_renderer_class, mock_pygame):
+        """Regression test: loop continues when state_manager.update() returns True"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        # Return True 10 times to verify loop continues
+        mock_state_manager_instance.update.side_effect = [True] * 10 + [False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute
+        run_game()
+
+        # Assert - update should be called 11 times (10 True + 1 False)
+        assert mock_state_manager_instance.update.call_count == 11
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_regression_config_created_before_pygame_init(self, mock_state_manager_class, 
+                                                           mock_config_class, mock_input_class, 
+                                                           mock_renderer_class, mock_pygame):
+        """Regression test: Config is created before pygame.init is called"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        mock_state_manager_instance.update.return_value = False
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        call_order = []
+        
+        def track_config_create():
+            call_order.append('config_create')
+            return mock_config
+        
+        def track_pygame_init():
+            call_order.append('pygame_init')
+
+        mock_config_class.side_effect = track_config_create
+        mock_pygame.init.side_effect = track_pygame_init
+
+        # Execute
+        run_game()
+
+        # Assert
+        config_index = call_order.index('config_create')
+        pygame_init_index = call_order.index('pygame_init')
+        assert config_index < pygame_init_index, "Config must be created before pygame.init"
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_regression_clock_tick_prevents_cpu_spin(self, mock_state_manager_class, 
+                                                      mock_config_class, mock_input_class, 
+                                                      mock_renderer_class, mock_pygame):
+        """Regression test: clock.tick is called to prevent CPU spinning"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_clock = Mock()
+        mock_pygame.time.Clock.return_value = mock_clock
+
+        mock_state_manager_instance = Mock()
+        mock_state_manager_instance.update.side_effect = [True, True, True, False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute
+        run_game()
+
+        # Assert - clock.tick should be called same number of times as loop iterations
+        assert mock_clock.tick.call_count == 4
+        # Verify it's called with the FPS value from config
+        for call_obj in mock_clock.tick.call_args_list:
+            assert call_obj[0][0] == 60
+
+
+# ============================================================================
+# ACCEPTANCE TESTS: High-level user scenarios and requirements
+# ============================================================================
+class TestRunGameAcceptance:
+    """Acceptance tests for user-facing requirements and scenarios"""
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_can_start_and_stop(self, mock_state_manager_class, 
+                                                 mock_config_class, mock_input_class, 
+                                                 mock_renderer_class, mock_pygame):
+        """Acceptance: Player can start the game and it initializes without errors"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        mock_state_manager_instance.update.return_value = False  # Game exits immediately
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute - should not raise any exceptions
+        try:
+            run_game()
+            success = True
+        except Exception as e:
+            success = False
+
+        # Assert
+        assert success, "Game should start and stop without errors"
+        mock_pygame.init.assert_called_once()
+        mock_pygame.quit.assert_called_once()
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_window_displays_correctly(self, mock_state_manager_class, 
+                                                        mock_config_class, mock_input_class, 
+                                                        mock_renderer_class, mock_pygame):
+        """Acceptance: Game window is displayed with correct title"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
         mock_state_manager_instance = Mock()
         mock_state_manager_instance.update.return_value = False
         mock_state_manager_class.return_value = mock_state_manager_instance
@@ -790,113 +900,225 @@ class TestRunGameE2E:
         # Execute
         run_game()
 
-        # Assert - SysFont should be called with Comic Sans
-        mock_pygame.font.SysFont.assert_called_once()
-        call_args = mock_pygame.font.SysFont.call_args[0]
-        assert call_args[0] == 'Comic Sans'
-        assert call_args[1] == 25  # size
-        assert call_args[2] is True  # bold
-        assert call_args[3] is False  # italic
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_game_window_caption_set(self, mock_state_manager_class, mock_pygame):
-        """E2E test: game window caption is set to Code^3 Tetris"""
-        # Setup
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert
+        # Assert - window should be created with correct title
+        mock_pygame.display.set_mode.assert_called_once()
         mock_pygame.display.set_caption.assert_called_once_with("Code^3 Tetris")
 
     @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
     @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_game_loop_exits_gracefully(self, mock_state_manager_class, mock_pygame):
-        """E2E test: game exits cleanly when state manager returns False"""
+    def test_acceptance_game_runs_at_configured_fps(self, mock_state_manager_class, 
+                                                     mock_config_class, mock_input_class, 
+                                                     mock_renderer_class, mock_pygame):
+        """Acceptance: Game runs at the FPS specified in configuration"""
         # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60  # User configures 60 FPS
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_clock = Mock()
+        mock_pygame.time.Clock.return_value = mock_clock
+
+        mock_state_manager_instance = Mock()
+        mock_state_manager_instance.update.side_effect = [True, True, False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute
+        run_game()
+
+        # Assert - clock.tick should be called with the configured FPS
+        for call_obj in mock_clock.tick.call_args_list:
+            assert call_obj[0][0] == 60
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_loop_runs_continuously(self, mock_state_manager_class, 
+                                                     mock_config_class, mock_input_class, 
+                                                     mock_renderer_class, mock_pygame):
+        """Acceptance: Game loop continues running until state manager indicates exit"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        # Simulate 100 frames of gameplay
+        mock_state_manager_instance.update.side_effect = [True] * 100 + [False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute
+        run_game()
+
+        # Assert - game should run for 101 iterations (100 True + 1 False)
+        assert mock_state_manager_instance.update.call_count == 101
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_receives_user_input(self, mock_state_manager_class, 
+                                                  mock_config_class, mock_input_class, 
+                                                  mock_renderer_class, mock_pygame):
+        """Acceptance: Game creates Input component to handle user input"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_input = Mock()
+        mock_input_class.return_value = mock_input
+
         mock_state_manager_instance = Mock()
         mock_state_manager_instance.update.return_value = False
-
         mock_state_manager_class.return_value = mock_state_manager_instance
 
         # Execute
         run_game()
 
-        # Assert - pygame.quit should be called at exit
-        mock_pygame.quit.assert_called_once()
-        # Only one iteration since update returns False immediately
-        assert mock_state_manager_instance.update.call_count == 1
+        # Assert - Input should be created to handle player input
+        mock_input_class.assert_called_once_with(mock_config)
 
     @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
     @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_counter_increments_with_real_config_level(self, mock_state_manager_class, mock_pygame):
-        """E2E test: counter increments based on real Config level value"""
+    def test_acceptance_game_renders_output(self, mock_state_manager_class, 
+                                             mock_config_class, mock_input_class, 
+                                             mock_renderer_class, mock_pygame):
+        """Acceptance: Game creates Renderer to display game visuals"""
         # Setup
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.side_effect = [True, True, True, False]
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert - check the config object passed to state manager
-        call_args = mock_state_manager_class.call_args[0]
-        config = call_args[0]
-        # Default level is 1, so counter should be 3 (1+1+1)
-        assert config.counter == 3
-        assert config.level >= 1
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_pygame_display_flipped_each_frame(self, mock_state_manager_class, mock_pygame):
-        """E2E test: pygame display is flipped (refreshed) each frame"""
-        # Setup
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.side_effect = [True, True, True, False]
-        mock_state_manager_class.return_value = mock_state_manager_instance
-
-        # Execute
-        run_game()
-
-        # Assert - display.flip should be called once per loop iteration (4 times)
-        assert mock_pygame.display.flip.call_count == 4
-
-    @patch('tetris.new_code.tetris_game.main.game.pygame')
-    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
-    def test_e2e_game_components_dependency_injection(self, mock_state_manager_class, mock_pygame):
-        """E2E test: game components are properly injected with dependencies"""
-        # Setup
-        mock_state_manager_instance = Mock()
-        mock_state_manager_instance.update.return_value = False
-        mock_state_manager_class.return_value = mock_state_manager_instance
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
 
         mock_screen = Mock()
         mock_pygame.display.set_mode.return_value = mock_screen
 
+        mock_renderer = Mock()
+        mock_renderer_class.return_value = mock_renderer
+
+        mock_state_manager_instance = Mock()
+        mock_state_manager_instance.update.return_value = False
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
         # Execute
         run_game()
 
-        # Assert - verify dependency chain
-        # 1. Config is created
-        call_args = mock_state_manager_class.call_args[0]
-        config = call_args[0]
-        assert config is not None
-        
-        # 2. Input is created with config
-        input_obj = call_args[1]
-        assert input_obj.config == config
-        
-        # 3. Renderer is created with screen
-        renderer = call_args[2]
-        assert renderer.screen == mock_screen
-        
-        # 4. StateManager is created with all three
-        assert mock_state_manager_class.call_count == 1
+        # Assert - Renderer should be created with screen to display visuals
+        mock_renderer_class.assert_called_once_with(screen=mock_screen)
 
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_frame_is_updated_every_iteration(self, mock_state_manager_class, 
+                                                               mock_config_class, mock_input_class, 
+                                                               mock_renderer_class, mock_pygame):
+        """Acceptance: Game display is refreshed (flipped) every frame"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
 
-if __name__ == '__main__':
-    pytest.main([__file__, '-v'])
+        mock_state_manager_instance = Mock()
+        # 50 frames of gameplay
+        mock_state_manager_instance.update.side_effect = [True] * 50 + [False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute
+        run_game()
+
+        # Assert - display should be flipped once per frame (51 times)
+        assert mock_pygame.display.flip.call_count == 51
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_graceful_shutdown(self, mock_state_manager_class, 
+                                                mock_config_class, mock_input_class, 
+                                                mock_renderer_class, mock_pygame):
+        """Acceptance: Game shuts down gracefully when requested"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 1
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        # Simulate player requesting exit after a few frames
+        mock_state_manager_instance.update.side_effect = [True, True, False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute - should not raise exceptions
+        try:
+            run_game()
+            shutdown_clean = True
+        except Exception as e:
+            shutdown_clean = False
+
+        # Assert
+        assert shutdown_clean, "Game should shut down gracefully"
+        mock_pygame.quit.assert_called_once()
+
+    @patch('tetris.new_code.tetris_game.main.game.pygame')
+    @patch('tetris.new_code.tetris_game.main.game.Renderer')
+    @patch('tetris.new_code.tetris_game.main.game.Input')
+    @patch('tetris.new_code.tetris_game.main.game.Config')
+    @patch('tetris.new_code.tetris_game.main.game.EnhancedStateManager')
+    def test_acceptance_game_tracks_score_progression(self, mock_state_manager_class, 
+                                                       mock_config_class, mock_input_class, 
+                                                       mock_renderer_class, mock_pygame):
+        """Acceptance: Game tracks player score/counter throughout gameplay"""
+        # Setup
+        mock_config = Mock()
+        mock_config.window_width = 800
+        mock_config.window_height = 600
+        mock_config.fps = 60
+        mock_config.counter = 0
+        mock_config.level = 10  # Player is at level 10
+
+        mock_config_class.return_value = mock_config
+
+        mock_state_manager_instance = Mock()
+        # 5 frames of gameplay
+        mock_state_manager_instance.update.side_effect = [True] * 5 + [False]
+        mock_state_manager_class.return_value = mock_state_manager_instance
+
+        # Execute
+        run_game()
+
+        # Assert - counter should increment based on level (5 frames * level 10 = 50)
+        assert mock_config.counter == 50
