@@ -28,12 +28,17 @@ style: |
 
 ---
 
-- Features: 1 / 7 (14%)
-- Requirements: 3 / 8 (37.5%)
-- LoC: 568
+- Features: 3 / 7 (42.9%)
+- Requirements: 5 / 8 (62.5%)
+- LoC: 269
 
-Bug fixes
-Code rework
+Feature: 
+- Main-menu / Game-over Screen
+  
+Requirement:
+- Menu Framework
+
+
 
 
 

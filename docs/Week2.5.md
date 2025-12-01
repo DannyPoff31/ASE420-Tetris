@@ -28,12 +28,14 @@ style: |
 
 ---
 
-- Features: 1 / 7 (14%)
-- Requirements: 3 / 8 (37.5%)
-- LoC: 568
+- Features: 5 / 7 (71.4%)
+- Requirements: 6 / 8 (75%)
+- LoC: 80
 
-Bug fixes
-Code rework
+Feature: 
+- Gamemode implemented
+
+
 
 
 

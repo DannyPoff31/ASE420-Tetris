@@ -28,12 +28,17 @@ style: |
 
 ---
 
-- Features: 1 / 7 (14%)
-- Requirements: 3 / 8 (37.5%)
-- LoC: 568
+- Features: 2 / 7 (28.6%)
+- Requirements: 4 / 8 (50%)
+- LoC: 570
 
-Bug fixes
-Code rework
+Feature: 
+- show next block
+  
+Requirement:
+- 'Understand and possibly change block creation' completed
+
+
 
 
 

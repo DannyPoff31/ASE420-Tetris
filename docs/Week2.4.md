@@ -28,12 +28,17 @@ style: |
 
 ---
 
-- Features: 1 / 7 (14%)
-- Requirements: 3 / 8 (37.5%)
-- LoC: 568
+- Features: 4 / 7 (57.1%)
+- Requirements: 6 / 8 (75%)
+- LoC: 80
 
-Bug fixes
-Code rework
+Feature: 
+- Special Block created
+  
+Requirement:
+- Music and Art added to game
+
+
 
 
 

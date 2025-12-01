@@ -32,8 +32,7 @@ style: |
 - Requirements: 3 / 8 (37.5%)
 - LoC: 568
 
-Bug fixes
-Code rework
+Started refactoring. We had a meeting to discuss the plans for this sprint
 
 
 
