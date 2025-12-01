@@ -9,7 +9,7 @@
 import pygame # type: ignore (ignores the "could not resolve" error)
 import os
 
-from ..main.constants import COLORS, BLACK, WHITE, GRAY
+from ..main.constants import COLORS, BLACK, WHITE, GRAY, LIGHT_BROWN, DARK_BROWN
 import random
 import os
 import math
@@ -41,6 +41,7 @@ class Renderer:
             else:
                 # Fallback to color if image not found
                 self.block_images[i] = None
+
         
         # Load special block image
         bomb_block_path = os.path.join(img_dir, 'bombBlock.png')
@@ -556,7 +557,7 @@ class Renderer:
     """
 
     def render_board(self, board):
-        self.screen.fill(WHITE)
+        self.screen.fill(LIGHT_BROWN)
 
         for i in range(board.height):
             for j in range(board.width):
@@ -659,7 +660,6 @@ class Renderer:
         score_y = self.yStart
         
         label_text = self.font.render('SCORE', True, BLACK)
-        label_width = label_text.get_width()
         self.screen.blit(label_text, (score_x, score_y))
         
         # Render the actual score value below the label (right aligned)
@@ -771,9 +771,9 @@ class Renderer:
                         )
 
     def _render_buttons(self, buttons):
-        self.screen.fill(WHITE)
+        self.screen.fill(LIGHT_BROWN)
         for button in buttons:
-            pygame.draw.rect(self.screen, WHITE, button["rect"])
+            pygame.draw.rect(self.screen, DARK_BROWN, button["rect"])
             text = self.font.render(button["label"], True, (255, 255, 255))
             text_rect = text.get_rect(center=button["rect"].center)
             self.screen.blit(text, text_rect)
@@ -801,7 +801,7 @@ class Renderer:
         self.screen.blit(level_text, (left_margin, level_y + 35))
 
     def clear(self):
-        self.screen.fill(WHITE)
+        self.screen.fill(LIGHT_BROWN)
         self.particles = []  # Clear particles when clearing screen
         self.flame_particles = []  # Clear flame particles
         self.column_flame_particles = []  # Clear column flame particles

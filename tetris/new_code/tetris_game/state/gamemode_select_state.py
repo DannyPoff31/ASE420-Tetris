@@ -203,7 +203,7 @@ class GamemodeSelection(AbstractState):
         font = pygame.font.SysFont('Comic Sans', 25, True, False)
         for button in self.mode_buttons:
             # Button background
-            pygame.draw.rect(self.renderer.screen, (0, 128, 255), button["rect"])
+            pygame.draw.rect(self.renderer.screen, (101, 67, 33), button["rect"])
             pygame.draw.rect(self.renderer.screen, (0, 0, 0), button["rect"], 2)
             
             # Button text
@@ -252,7 +252,7 @@ class GamemodeSelection(AbstractState):
         
         # Draw confirm button (only enabled if at least one piece selected)
         if len(self.selected_special_pieces) > 0:
-            confirm_color = (0, 128, 255)
+            confirm_color = (101, 67, 33)
         else:
             confirm_color = (100, 100, 100)
         
